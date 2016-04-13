@@ -1,0 +1,10 @@
+{
+  "stage": {
+    "url": "https://api.system.aws-usw02-pr.ice.predix.io",
+    "target": "es5",
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
