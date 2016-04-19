@@ -9,15 +9,32 @@ include 'C:/xampp/htdocs/cf-ui/framework/mapache/1/Mapache.php';
 
 // Prepare Mapache configuration
 $config = Array(
-    'root_path' => 'C:/xampp/htdocs/cf-ui',
-    'include' => Array(
-        'cf' => 'components/cf.php'
-    )
+    'mapache' => array(
+        'root_path' => 'C:/xampp/htdocs/cf-ui',
+        'include' => Array(
+            'cf\CloudFoundry' => 'components/cf/CloudFoundry.php',
+            'cf\Apps' => 'components/cf/Apps.php'
+        )
+    ),
+    'proxy' => 'iss-americas-pitc-cincinnatiz.proxy.corporate.ge.com:80'
+
 );
 
-function getCfgArray(){
-    global $config;
-    return $config;
+$GLOBALS['config'] = $config;
+
+function getGlobal($index){
+    $attributePath = explode('/',$index);
+    $configTree = $GLOBALS['config'];
+    foreach ($attributePath as $attrIndex){
+        $configTree = (isset($configTree[$attrIndex]))?
+            $configTree[$attrIndex] : null;
+        if($configTree == null){break;}
+    }
+
+    return $configTree;
 }
 
-$handler = new Mapache\Handler($config);
+
+
+
+$handler = new Mapache\Handler($config['mapache']);
