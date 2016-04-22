@@ -31,11 +31,34 @@ class CloudFoundry {
         );
 
         // Prepare curl request
+        $http = new cf_curl($authEndpoint.'/oauth/token', cf_curl::$METHOD_POST);
+        $http->setParameters($post);
+        $http->appendHeaders('Authorization: Basic Y2Y6');
+
+        return $http->execute();
+    }
+    
+    public static function refreshToken($refresh_token, $authEndpoint = null){
+
+        $post = Array(
+            'grant_type' => 'refresh_token',
+            'refresh_token' => "$refresh_token"
+        );
+
+        // Prepare curl request
         $http = new cf_curl($authEndpoint, cf_curl::$METHOD_POST);
         $http->setParameters($post);
         $http->appendHeaders('Authorization: Basic Y2Y6');
 
         return $http->execute();
+    }
+    
+    public static function getAuthEndpoint($endpoint){
+        $info = self::info($endpoint);
+        if(!isset($info->authorization_endpoint)){
+            throw new Exception("Cannot retrieve authorization endpoint, please verify your api url");
+        }
+        return $info->authorization_endpoint;
     }
 
 

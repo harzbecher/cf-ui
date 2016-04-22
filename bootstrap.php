@@ -13,8 +13,10 @@ $config = Array(
         'root_path' => 'C:/xampp/htdocs/cf-ui',
         'include' => Array(
             'cf\CloudFoundry' => 'components/cf/CloudFoundry.php',
-            'cf\Apps' => 'components/cf/Apps.php'
-        )
+            'cf\Apps' => 'components/cf/Apps.php',
+            'Session' => 'components/Session.php'
+        ),
+        'views_path' => 'C:/xampp/htdocs/cf-ui/public/app/views/'
     ),
     'proxy' => 'iss-americas-pitc-cincinnatiz.proxy.corporate.ge.com:80'
 

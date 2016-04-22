@@ -18,7 +18,7 @@ class Example extends Controller
     }
 
     function indexAction(){
-        $this->view->render('Example_view');
+        $this->view->render('Example_view.php');
     }
 
     function info(){
@@ -32,7 +32,7 @@ class Example extends Controller
         $token = filter_input(INPUT_POST, 'token');
 
         $params = Array(
-            //'q' => 'name:geiq-php-test'
+            'q' => 'name:geiq-php-test'
         );
 
         $cfApps = new cf\Apps($this->endPoint, 2, $token);

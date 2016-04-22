@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+
+        <link rel="stylesheet" type="text/css" href="http://localhost/cf-ui/public/app/vendor/bootstrap/css/bootstrap.min.css" />
+
+        <link rel="stylesheet" type="text/css" href="http://localhost/cf-ui/public/app/styles/login.css" />
+
+        <script src="http://localhost/cf-ui/public/app/vendor/angular.min.js" ></script>
+        <script src="http://localhost/cf-ui/public/app/vendor/jquery.min.js" ></script>
+        <script src="http://localhost/cf-ui/public/app/vendor/bootstrap/js/bootstrap.min.js" ></script>
+
+        <script src="http://localhost/cf-ui/public/app/app.js" ></script>
+        <script src="http://localhost/cf-ui/public/app/controllers/loginController.js" ></script>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    
+    <body ng-app="cf-gui">
+        
+        <div class="site-wrapper">
+            
+            <div class="site-wrapper-inner">
+                <div class="cover-container">
+                    <div class="masthead clearfix">
+                        <div class="inner">
+                            <h3 class="masthead-brand">Cloud foundry GUI</h3>
+                            <ul class="nav masthead-nav">
+                                <li class="active">
+                                    <a href="#">Sign in</a>
+                                </li>
+
+                                <li>
+                                    <a href="#">Predix</a>
+                                </li>
+                                
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="inner cover">
+                        
+                        <div class="col-md-12" style="pading: 501px; padding-top: 0px">
+                            
+                            <div style="background-color: #333333; width: 100%; position: absolute; height: 100%; z-index: 0; opacity: 0.95; margin-left: -10px">
+                            </div>
+                            
+                            <div style="z-index: 3; padding: 100px; position: relative; padding-top: 0px" >
+                                
+                                <img src="http://localhost/cf-ui/public/app/img/login_halo.png" />
+                                
+                                <form ng-controller="login">
+                                    <div class="alert alert-warning" ng-if="errorMessage" role="alert" style="text-shadow: none">{{errorMessage}}</div>
+                                    
+                                    <div class="form-group">
+                                        <input ng-model="username" type="text" class="form-control" placeholder="Email">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <input ng-model="password" type="password" class="form-control" placeholder="Password">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <a class="pull-left" data-toggle="collapse" href="#loginOptionsBox">Settings&nbsp;<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a>
+                                        <br/>
+                                        <div class="collapse" id="loginOptionsBox">
+                                            <div class="checkbox">
+                                                <label class="pull-left">
+                                                    <input ng-model="ignoreSSL" type="checkbox"> Ignore SSL
+                                                </label>
+                                            </div><br/>
+                                            <div class="form-group">
+                                                <input ng-model="endpoint" type="text" class="form-control" placeholder="Password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    
+                                    <button type="button" class="btn btn-signin" ng-click="login()" >
+                                        
+                                        Sign in&nbsp;<img ng-if="loading" style="width: 15px; height: 15px;" src="http://localhost/cf-ui/public/app/img/loading.gif" />
+                                    </button>
+                                    
+                                </form>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

@@ -27,12 +27,8 @@ class Handler {
         
         global $mapacheConfig;
         
-        if(isset($config) && is_array($config)){
-            foreach ($config as $attribute => $value){
-                if(isset($mapacheConfig[$attribute])){
-                    $mapacheConfig[$attribute] = $value;
-                }
-            }
+        if(isset($config['root_path'])){
+            $mapacheConfig['root_path'] = $config['root_path'];
         }
         
         $mapacheConfig['controllers_path'] = 
@@ -49,6 +45,14 @@ class Handler {
                 $mapacheConfig['root_path'].'/'.
                 $mapacheConfig['source_folder'].'/'.
                 $mapacheConfig['views_folder'].'/';
+        
+        if(isset($config) && is_array($config)){
+            foreach ($config as $attribute => $value){
+                if(isset($mapacheConfig[$attribute])){
+                    $mapacheConfig[$attribute] = $value;
+                }
+            }
+        }
         
         if(isset($mapacheConfig['db'])){
             $connectionString = $mapacheConfig['db']['driver'].'://'.
