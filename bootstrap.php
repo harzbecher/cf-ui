@@ -1,16 +1,28 @@
 <?php
+if(!defined('APPLICATION_ENV')) {
+	define('APPLICATION_ENV',
+		(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
+}
+if(!defined('APPLICATION_PATH')) {
+	define('APPLICATION_PATH',
+		realpath(dirname(__FILE__) ) );
+}
+
+if(!defined('BASE_URL')) {
+	define('BASE_URL',
+		realpath(dirname(__FILE__) ) );
+}
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Include Mapache and GEIQ API
-include 'C:/xampp/htdocs/cf-ui/framework/mapache/1/Mapache.php';
-//C:\xampp\htdocs\cf-ui\framework\mapache\1
+require APPLICATION_PATH . '/framework/mapache/1/Mapache.php';
 
 // Prepare Mapache configuration
 $config = Array(
     'mapache' => array(
-        'root_path' => 'C:/xampp/htdocs/cf-ui',
+        'root_path' => APPLICATION_PATH,
         'include' => Array(
             'cf\CloudFoundry' => 'components/cf/CloudFoundry.php',
             'cf\Apps' => 'components/cf/Apps.php'
