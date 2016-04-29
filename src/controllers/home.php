@@ -14,10 +14,9 @@ class home extends Controller
 
     public function __construct(){
         parent::__construct();
-        
         $this->session = new Session();
         if(!$this->session->isActive()){
-            header('Location:login');
+            header('Location:/cf-ui/login/');
         }
     }
 

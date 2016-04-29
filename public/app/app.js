@@ -1,7 +1,7 @@
 var cfGui = angular.module("cf-gui", []);
 
 cfGui.value('config', {
-    'host': 'http://localhost/cf-ui/',
+    'host': '/cf-ui/',
     'controllers': {
         'login': "host"+'login'
     }

@@ -9,8 +9,7 @@ if(!defined('APPLICATION_PATH')) {
 }
 
 if(!defined('BASE_URL')) {
-	define('BASE_URL',
-		realpath(dirname(__FILE__) ) );
+	define('BASE_URL', '/cf-ui' );
 }
 
 error_reporting(E_ALL);
@@ -28,7 +27,7 @@ $config = Array(
             'cf\Apps' => 'components/cf/Apps.php',
             'Session' => 'components/Session.php'
         ),
-        'views_path' => 'C:/xampp/htdocs/cf-ui/public/app/views/'
+        'views_path' => APPLICATION_PATH . '/public/app/views/'
     ),
     'proxy' => 'iss-americas-pitc-cincinnatiz.proxy.corporate.ge.com:80'
 
