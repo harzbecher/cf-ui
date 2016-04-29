@@ -30,10 +30,8 @@ class Example extends Controller
     function getToken(){
         $username = filter_input(INPUT_POST, 'username');
         $password = filter_input(INPUT_POST, 'password');
-
         $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
         $response->setData(\cf\CloudFoundry::getToken("$username", "$password", "$this->loginEndPoint/oauth/token"));
         $response->display();
     }
 
-}

@@ -12,6 +12,6 @@ use Mapache\Controller;
 class Index extends Controller
 {
     public function IndexAction(){
-        header("Location: /cf-ui/rest/");
+        header("Location: /cf-ui/home/");
     }
 }

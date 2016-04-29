@@ -19,7 +19,7 @@ class View {
     function rawRender($name)
     {
         // render view
-        require 'src/' . $this->module.'/views/'.$name.'.php';
+        require 'src/' . $this->module.'/views/'.$name;
     }
     
     /**
@@ -31,7 +31,7 @@ class View {
     {
         global $mapacheConfig;
         // render view
-        require $mapacheConfig['views_path'].$name.'.php';
+        require $mapacheConfig['views_path'].$name;
     }
 
 }
