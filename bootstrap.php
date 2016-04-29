@@ -14,11 +14,12 @@ $config = Array(
         'include' => Array(
             'cf\CloudFoundry' => 'components/cf/CloudFoundry.php',
             'cf\Apps' => 'components/cf/Apps.php',
+            'cf\Files' => 'components/cf/Files.php',
             'Session' => 'components/Session.php'
         ),
         'views_path' => 'C:/xampp/htdocs/cf-ui/public/app/views/'
     ),
-    'proxy' => 'iss-americas-pitc-cincinnatiz.proxy.corporate.ge.com:80'
+    'proxy' => 'PITC-Zscaler-Americas-Cincinnati3PR.proxy.corporate.ge.com:80'
 
 );
 

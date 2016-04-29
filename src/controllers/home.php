@@ -17,13 +17,14 @@ class home extends Controller
         
         $this->session = new Session();
         if(!$this->session->isActive()){
+            echo $this->session->getErrorMessage();
             header('Location:login');
         }
     }
 
     function indexAction(){
-        
-        echo "Hey you did it!, here is your token: ".$this->session->getToken();
+        $this->view->render('home.html');
+        //echo "Hey you did it!, here is your token: ".$this->session->getToken();
         
     }
 

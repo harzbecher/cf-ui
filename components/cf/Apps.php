@@ -6,6 +6,7 @@ require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'cf_curl.php';
 /**
  * Cloud foundry apps REST Client
  * @author: Víctor Hugo garcía Harzbecher <victorhugo.garcia@ge.com >
+ * @author: Fernando Espinosa <fernando.espinosa@ge.com>
  * @version: 1.0
  * @since: April 2016
  */
@@ -22,13 +23,63 @@ class Apps {
 
     }
 
-    public function listApps($args){
-
+    public function listApps($args=null){
+        
         $http = new cf_curl($this->apiUrl);
         $http->setMethod(cf_curl::$METHOD_GET);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        if(isset($args)){
+            $http->setParameters($args);
+        }
+        
+        return $http->execute();
+    }
+    
+    
+    
+    public function getEnv($appguid){
+        
+        if(!isset($appguid)){
+            throw new Exception('Invalid guid provided');
+        }
+        
+        $http = new cf_curl($this->apiUrl."/$appguid/env");
+        $http->setMethod(cf_curl::$METHOD_GET);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        
+        return $http->execute();
+    }
+    
+    public function createApp($args){
+
+        $http = new cf_curl($this->apiUrl);
+        $http->setMethod(cf_curl::$METHOD_POST);
         $http->appendHeaders("Authorization: bearer $this->token");
         $http->setParameters($args);
         return $http->execute();
     }
 
+    public function updateApp($args, $appguid){
+
+        $http = new cf_curl($this->apiUrl . '/' . $appguid);
+        $http->setMethod(cf_curl::$METHOD_PUT);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        $http->setParameters($args);
+        return $http->execute();
+    }
+
+    public function deleteApp($args, $appguid){
+
+        $http = new cf_curl($this->apiUrl . '/' . $appguid);
+
+        $http->setMethod(cf_curl::$METHOD_DELETE);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        $http->setParameters($args);
+        return $http->execute();
+    }
+    
+    
+
 }
+
+<?php

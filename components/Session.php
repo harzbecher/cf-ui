@@ -1,58 +1,93 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Cloud foundry GUI Session manager
+ * @author: Víctor Hugo garcía Harzbecher <victorhugo.garcia@ge.com >
+ * @version: 1.0
+ * @since: April 2016
  */
-
 class Session{
     
+    /**
+     * Session Error message
+     * @var String
+     */
+    private $errorMessage = "";
+    
+    /**
+     * Constructor
+     * @throws Exception
+     */
     public function __construct() {
+        
+        // Start Session
         if(!session_start()){
-            throw new Exception("Could not start Session");
+            $this->errorMessage = "Could not start Session";
+            return false;
         }
     }
 
+    /**
+     * Returns the error message thrown by any of the object functions
+     * @return String Error message
+     */
+    public function getErrorMessage(){
+        return $this->errorMessage;
+    }
 
+    /**
+     * Starts a Cloud Foundry session.
+     * @param String $username Cloud foundry username or email
+     * @param String $password Account password
+     * @param String $endpoint Cloud foundry API endpoint
+     * @param String $SSHVerificationEnabled Enable or disable SSL Verification 
+     * @return boolean true if session could be stablished, false otherwise
+     */
     public function login($username, $password, $endpoint, $SSHVerificationEnabled = true){
-        
-        
         
         // Verify login data
         if(isset($_SESSION['cf_access'])){
-            // Kill session
+            // Kill previous sessions
             session_unset();
-            //if($this->isExpired()){$this->refreshToken();}
-            //print_r($_SESSION['cf_access']);
-            //return true;
         }
         
+        // Retrieve API authorization endpoint
         $authEndpoint = \cf\CloudFoundry::getAuthEndpoint($endpoint);
         
-        // Get token
+        // Try to retrieve token
         $tokenData = \cf\CloudFoundry::getToken($username, $password, $authEndpoint);
         
         // Dump data into session
-        $this->dumpAccessData($tokenData);
+        if(!$this->dumpAccessData($tokenData)){
+            return false;
+        }
+        
         $_SESSION['cf_access']['authorization_endpoint'] = $authEndpoint;
+        $_SESSION['cf_access']['api_endpoint'] = $endpoint;
         
         return true;
     }
     
+    /**
+     * Dump access Array into session variables
+     * @param stdObject $accessData An object containing access data
+     * @return boolean true if access data could be retrieved, false if an error ocurr.
+     */
     private function dumpAccessData($accessData){
         
+        // Clean session data
+        unset($_SESSION['cf_access']);
         $_SESSION['cf_access'] = Array();
         
         // Check for errors
         if(isset($accessData->error)){
-            throw new Exception("Error: $accessData->error, $accessData->error_description");
+            $this->errorMessage = "Error: $accessData->error, $accessData->error_description";
+            return false;
         }
         
         // verify token
-        // Check for errors
         if(!isset($accessData->access_token)){
-            throw new Exception("Error: Access token is missing, cannot start session in cf");
+            $this->errorMessage = "Error: Access token is missing, cannot start session in cf";
         }
         
         // Fill attributes
@@ -65,70 +100,109 @@ class Session{
         return true;
     }
     
+    /**
+     * Verify if Session is valid
+     * @return boolean true if session is active, false otherwise
+     */
+    public function isValid(){
+        
+        // Verify Session data
+        if(!isset($_SESSION['cf_access'])){
+            $this->errorMessage = 'Session not started';
+            return false;
+        }
+        
+        if(!$this->isActive()){
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Verify if session is still active
+     * @return boolean
+     */
+    public function isActive(){
+        // Verify Session timeout data
+        if( !isset($_SESSION['cf_access'], $_SESSION['cf_access']['expiration_time']) ){
+            $this->errorMessage = 'Invalid session timeout data';
+            return false;
+        }
+        
+        // Verify Session expiration time
+        $currentTime = time();
+        if($currentTime > $_SESSION['cf_access']['expiration_time']){
+            // try to refresh token
+            if(!$this->refreshToken()){
+                $this->errorMessage = 'Session expired';
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+
+    /**
+     * Refresh access_token
+     * @return boolean returns true if token could be refreshed, false Otherwise
+     */
     public function refreshToken(){
         
         if(!isset($_SESSION['cf_access'], 
                 $_SESSION['cf_access']['authorization_endpoint'],
                 $_SESSION['cf_access']['refresh_token'])){
+            $this->errorMessage = "Invalid refresh data";
             return false;
         }
         
+        // Refresh token
         $authEndpoint = $_SESSION['cf_access']['authorization_endpoint'];
         $refreshToken = $_SESSION['cf_access']['refresh_token'];
         $tokenData = cf\CloudFoundry::refreshToken($refresh_token, $authEndpoint);
         
-        $this->dumpAccessData($accessData);
+        if(!$this->dumpAccessData($accessData)){
+            return false;
+        }
+        
         return true;
     }
     
-    public function isExpired(){
-        
-        if( !isset($_SESSION['cf_access'], $_SESSION['cf_access']['expiration_time']) ){
-            return true;
-        }
-        
-        $currentTime = time();
-        if(isset($_SESSION['cf_access']) 
-                && ($currentTime > $_SESSION['cf_access']['expiration_time'])){
-            return true;
-        }
-        
-        
-        return false;
-    }
     
+    /**
+     * Retrieves session access token
+     * @return String/boolean, Access token if found, false otherwise
+     */
     public function getToken(){
         
         // Refresh token
-        if($this->isExpired()){
-            $this->refreshToken();
+        if( !($this->isActive()) && !($this->refreshToken()) ){
+            return false;
         }
         
-        return (isset($_SESSION['cf_access']['access_token']))? $_SESSION['cf_access']['access_token'] : null;
+        // Verify access token
+        if( !isset($_SESSION['cf_access']['access_token']) ){
+            $this->errorMessage = "Invalid access token";
+            return false;
+        }
+        
+        return $_SESSION['cf_access']['access_token'];
     }
     
-    public function isValid(){
-        if(isset($_SESSION['cf_access'])){
-            return true;
+    /**
+     * Retrieves session endpoint
+     * @return String/boolean, endpoint url if found, false otherwise
+     */
+    public function getEndPoint(){
+        
+        // Verify end point
+        if( !isset($_SESSION['cf_access']['api_endpoint']) ){
+            $this->errorMessage = "Invalid endpoint";
+            return false;
         }
         
-        return false;
-    }
-    
-    public function isActive(){
-        
-        if(!$this->isValid()){return false;}
-        
-        // Verify session 
-        if( $this->isExpired() ){
-            // Try to resume the session
-            if( !$this->refreshToken() ){
-                return false;
-            }
-        }
-
-        
-        return true;
+        return $_SESSION['cf_access']['api_endpoint'];
     }
     
     

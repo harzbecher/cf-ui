@@ -17,9 +17,13 @@ class cf_curl{
     public static $METHOD_GET = 'GET';
     public static $METHOD_PUT = 'PUT';
     public static $METHOD_DELETE = 'DELETE';
+    
+    public static $PMODE_JSON = 'json';
+    public static $PMODE_RAW = 'raw';
 
     private $method = null;
     private $parameters = null;
+    private $parseMode = 'json';
 
     private $config = Array(
         CURLOPT_RETURNTRANSFER => 1,
@@ -31,7 +35,7 @@ class cf_curl{
             'Accept: application/json;charset=utf-8'
         )
     );
-
+    
 
     public function __construct($url = null, $method = null){
 
@@ -45,6 +49,11 @@ class cf_curl{
             $this->config[CURLOPT_PROXY] = $proxy;
         }
 
+    }
+    
+    public function setParseMode($mode){
+        $this->parseMode = $mode;
+        return true;
     }
 
     public function setCurlOptConfig($configArray){
@@ -99,7 +108,23 @@ class cf_curl{
                     break;
                 case self::$METHOD_POST:
                     $this->config[CURLOPT_POST] = 1;
-                    $this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    // http_build_query only used when a token is requested
+                    if(isset($this->parameters['username']) && isset($this->parameters['password'])){
+                        $this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    }else{
+                        $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
+                    }
+                    break;
+                case self::$METHOD_PUT:
+                    $this->config[CURLOPT_CUSTOMREQUEST] = 'PUT';
+                    $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
+                    //$this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    break;
+                case self::$METHOD_DELETE:
+                    $this->config[CURLOPT_CUSTOMREQUEST] = "DELETE";
+                    $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
+                    //$this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    break;
             }
         }
 
@@ -117,9 +142,16 @@ class cf_curl{
         // Close cURL
         curl_close($handler);
 
-        // Return response in PHP readable way
-        $response = json_decode($response);
-        return $response;
+        // Parse response
+        switch ($this->parseMode){
+            case self::$PMODE_RAW:
+                return $response;
+            // Return response in PHP readable way
+            default :
+                return json_decode($response);
+        }
+        
+        
     }
 
 }

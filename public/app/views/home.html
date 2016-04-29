@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html style="height: 100%">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+
+        <link rel="stylesheet" type="text/css" href="http://localhost/cf-ui/public/app/vendor/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="http://localhost/cf-ui/public/app/styles/home.css" />
+
+        <script src="http://localhost/cf-ui/public/app/vendor/angular.min.js" ></script>
+        <script src="http://localhost/cf-ui/public/app/vendor/jquery.min.js" ></script>
+        <script src="http://localhost/cf-ui/public/app/vendor/bootstrap/js/bootstrap.min.js" ></script>
+
+        <script src="http://localhost/cf-ui/public/app/app.js" ></script>
+        <script src="http://localhost/cf-ui/public/app/controllers/appsController.js" ></script>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    
+    <body ng-app="cf-gui" style="height: 90%; background-color: #3b3b3f; " ng-app="cf-gui">
+        <div class="container" style="height: 100%">
+            <div class="row" style="background-color: #FFFFFF; height: 100%; position: relative" >
+                <div class="col-md-12" style="height: 100%">
+
+                    <div class="row">
+                        <div class="col-md-12" style="padding: 0px">
+                            <div class="masthead clearfix" style="background-color: #3b3b3f; ">
+                                <div class="inner">
+                                    
+                                    <h3 class="masthead-brand">
+                                        <span class="glyphicon glyphicon-cloud"></span>
+                                        &nbsp;Predix Foundry
+                                    </h3>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="height: 100%; position: relative">
+
+                        <div class="col-md-2" style="background-color: #242326; height: 100%; position: relative">
+                            <div class="row" style="height: 100%">
+                                <div style="padding-left: 15px; padding-right: 15px; padding-bottom: 15px;">
+                                    <span class="glyphicon glyphicon-menu-hamburger"></span>
+                                    <select class="form-control">
+                                        <option>Dev</option>
+                                    </select>
+                                </div>
+                                
+                                <ul  id="myTabs" class="nav nav-pills nav-stacked">
+                                    <li role="presentation" class="active" style="border: none">
+                                        <a href="#appsPanel"><span class="glyphicon glyphicon-cloud"></span>&nbsp;Apps</a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a href="#servicesPanel">Services</a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a href="#">Users</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-10 main-container tab-content" style="border: 5px solid #8b8d8f ; position: relative; height: 100%; ">
+                            
+                            <!-- Apps -->
+                            <div class="panel panel-default panel-main tab-pane fade in active" role="tabpanel" id="appsPanel" style="position: relative; height: 100%; padding-bottom: 55px;">
+                                
+                                <div class="panel-heading main-heading">
+                                    Applications
+                                    
+                                    <div class="pull-right btn-group">
+                                        <button class="btn btn-xs btn-success">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="panel-body ops-panel" ng-controller="apps">
+                                    <div class="row" style="height: 100%; position: relative;">
+                                        <div class="col-md-4 group-wrapper" ng-class="selectedApp ? 'col-md-4' : 'col-md-12' ">
+                                            <div class="panel panel-default" style="height: 100%; position: relative;">
+                                                
+                                                    <div class="list-group" style="height: 100%; position: relative;">
+
+                                                        <a ng-repeat="app in apps" href="#" 
+                                                           class="list-group-item" 
+                                                           style="border-radius: 0px"  
+                                                           ng-class="app.entity.staging_failed_description == undefined ? '' : 'list-group-item-warning'" 
+                                                           ng-click="selectApp(app)">
+                                                            <span class="label" ng-class="getStateClass(app.entity.state)">
+                                                                  {{app.entity.state}}
+                                                            </span> &nbsp;
+                                                            <h4 class="list-group-item-heading" style="display: inline-block">
+                                                                {{app.entity.name}}
+                                                            </h4> 
+                                                            <small ng-if="app.entity.production" class="text-success">(Production)</small>
+                                                            <small ng-if="!app.entity.production" class="text-info">(Stage)</small>
+                                                            <div ng-if="app.entity.staging_failed_description" class="alert alert-danger">
+                                                                <b>Package {{app.entity.package_state}}, </b>
+                                                                {{app.entity.staging_failed_description}}
+                                                            </div>
+
+                                                            <ul>
+                                                                <li>
+                                                                    <b>Buildpack</b>&nbsp;
+                                                                    {{app.entity.buildpack}}
+                                                                </li>
+                                                            </ul>
+                                                        </a>
+                                                    </div>
+                                                
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                        <div ng-if="selectedApp" class="col-md-8 app-detail" style="height: 100%; position: relative;">
+                                            <div class="panel panel-default" style="height: 100%; position: relative;">
+                                                
+                                                <div class="panel-heading sub-panel-heading" >
+                                                    
+                                                    <!-- Application section tabs -->
+                                                    <ul class="nav nav-tabs header-tabs">
+                                                        <li class="nav-title">App - {{selectedApp.entity.name}}</li>
+                                                        <li ng-repeat="section in appSections" ng-class="activeSection == section ? 'active' : ''">
+                                                            <a ng-click="loadSection(section)" >{{section}}</a>
+                                                        </li>
+                                                    </ul>
+                                                    
+                                                </div>
+                                                
+                                                <div class="panel-body" ng-if="activeSection == 'Summary'">
+                                                    <h3>Uris</h3>
+                                                    <ul>
+                                                        <li ng-repeat="uri in selectedApp.env.uris ">
+                                                            <a href="https://{{uri}}">{{uri}}</a>
+                                                        </li>
+                                                    </ul>
+                                                    <h3>Hardware limits</h3>
+                                                    <ul>
+                                                        <li ng-repeat="(key, value) in selectedApp.env.limits" >
+                                                            <b>{{key}}&nbsp;</b>
+                                                            {{value}}
+                                                        </li>
+                                                    </ul>
+                                                    <h3>Space</h3>
+                                                    <ul>
+                                                        <li>
+                                                            <b>Name&nbsp;</b>
+                                                            {{selectedApp.env.space.name}}
+                                                        </li>
+                                                        <li>
+                                                            <b>ID&nbsp;</b>
+                                                            {{selectedApp.env.space.id}}
+                                                        </li>
+                                                    </ul>
+                                                    {{selectedApp.metadata.guid}}
+                                                    
+                                                    <h3>Users</h3>
+                                                    <ul>
+                                                        
+                                                    </ul>
+                                                    
+                                                </div>
+                                                
+                                                <!-- Application Files -->
+                                                <div class="panel-body" ng-if="activeSection == 'Files'">
+                                                    <ul class="list-group">
+                                                        <li ng-repeat="file in selectedApp.files" class="list-group-item">
+                                                            <small ng-if="file.size == '-'" class="text-info glyphicon glyphicon-plus"></small>
+                                                            <small ng-if="file.size != '-'" class="glyphicon glyphicon-file"></small>
+                                                            
+                                                            <span class="badge">{{file.size}}</span>
+                                                            {{file.name}}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Services -->
+                            <div class="panel panel-default panel-main tab-pane fade"
+                                 role="tabpanel"
+                                 id="servicesPanel" style="position: relative; height: 100%; padding-bottom: 55px;">
+                                
+                                <div class="panel-heading main-heading">
+                                    Services
+                                </div>
+                                
+                                <div class="panel-body" ng-controller="apps" style="height: 100%; position: relative; overflow: auto;">
+                                    <div class="row" style="height: 100%; position: relative;">
+                                        <div class="col-md-4 group-wrapper" style="height: 100%; position: relative;">
+                                            <div class="panel panel-default" style="height: 100%; position: relative;">
+                                                
+                                                    <div class="list-group" style="height: 100%; position: relative;">
+
+                                                        <a ng-repeat="app in apps" href="#" 
+                                                           class="list-group-item" 
+                                                           style="border-radius: 0px"  
+                                                           ng-class="app.entity.staging_failed_description == undefined ? '' : 'list-group-item-warning'" 
+                                                           ng-click="selectApp(app)">
+                                                            <span class="label" ng-class="getStateClass(app.entity.state)">
+                                                                  {{app.entity.state}}
+                                                            </span> &nbsp;
+                                                            <h4 class="list-group-item-heading" style="display: inline-block">
+                                                                {{app.entity.name}}
+                                                            </h4> 
+                                                            <small ng-if="app.entity.production" class="text-success">(Production)</small>
+                                                            <small ng-if="!app.entity.production" class="text-info">(Stage)</small>
+                                                            <div ng-if="app.entity.staging_failed_description" class="alert alert-danger">
+                                                                <b>Package {{app.entity.package_state}}, </b>
+                                                                {{app.entity.staging_failed_description}}
+                                                            </div>
+
+                                                            <ul>
+                                                                <li>
+                                                                    <b>Buildpack</b>&nbsp;
+                                                                    {{app.entity.buildpack}}
+                                                                </li>
+                                                            </ul>
+                                                        </a>
+                                                    </div>
+                                                
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                        <div class="col-md-8 app-detail" style="height: 100%; position: relative;">
+                                            <div class="panel panel-default" style="height: 100%; position: relative;">
+                                                <div class="panel-heading" >
+                                                    <h2>{{selectedApp.entity.name}}</h2> Summary
+                                                </div>
+                                                <div class="panel-body">
+                                                    <h3>Uris</h3>
+                                                    <ul>
+                                                        <li ng-repeat="uri in selectedApp.env.uris ">
+                                                            <a href="https://{{uri}}">{{uri}}</a>
+                                                        </li>
+                                                    </ul>
+                                                    <h3>Hardware limits</h3>
+                                                    <ul>
+                                                        <li ng-repeat="(key, value) in selectedApp.env.limits" >
+                                                            <b>{{key}}&nbsp;</b>
+                                                            {{value}}
+                                                        </li>
+                                                    </ul>
+                                                    <h3>Space</h3>
+                                                    <ul>
+                                                        <li>
+                                                            <b>Name&nbsp;</b>
+                                                            {{selectedApp.env.space.name}}
+                                                        </li>
+                                                        <li>
+                                                            <b>ID&nbsp;</b>
+                                                            {{selectedApp.env.space.id}}
+                                                        </li>
+                                                    </ul>
+                                                    
+                                                    <h3>Users</h3>
+                                                    <ul>
+                                                        
+                                                    </ul>
+                                                    
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                    </div>
+
+
+                
+                </div>
+            </div>
+            
+        </div>
+        
+        
+        <script>
+            $('#myTabs a').click(function (e) {
+                e.preventDefault()
+                $(this).tab('show')
+              })
+        </script>
+            
+    </body>
+</html>

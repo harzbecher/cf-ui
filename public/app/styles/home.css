@@ -1,0 +1,129 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Apr 25, 2016, 8:04:51 PM
+    Author     : 204072257
+*/
+
+/* Masthead */
+.masthead-brand{
+    color: #d1d0d9;
+}
+
+.nav-pills > li > a{
+    border: none;
+    border-radius: 0px;
+    background-color: #242326;
+    background-image: none;
+    text-shadow: none;
+    color: #FFFFFF;
+}
+
+.nav-pills > li.active > a{
+    border: none;
+    background-image: none;
+    background-color: #006e88;
+        
+}
+
+.module{
+    padding: 0px;
+}
+
+.module-body{
+    padding: 10px;
+}
+
+.module-title {
+    
+}
+
+.app-detail{
+    padding-left: 0px;
+}
+
+.app-detail .panel{
+    border-left: none;
+}
+
+.group-wrapper{
+    
+    padding-right: 0px;
+}
+
+/* panels */
+
+.sub-panel-heading{
+    padding-bottom: 0px;
+}
+
+.panel{
+    border-radius: 0px;
+}
+
+.panel-header{
+    border-radius: 0px;
+}
+
+.main-container{
+    padding: 0px;
+}
+
+.panel-main{
+    border: none;
+}
+
+.panel-main .main-heading{
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: #3b3b3f;
+    font-size: 20px;
+    border-bottom: 5px solid #8b8d8f;
+    text-shadow: none;
+    background-color: #FFFFFF;
+    margin: 0px;
+}
+
+.ops-panel{
+    height: 100%;
+    position: relative;
+    overflow: auto;
+}
+
+.group-wrapper{
+    height: 100%;
+    position: relative;
+}
+
+/* Navs */
+
+.nav-tabs.header-tabs {
+    border-bottom: 0px;
+}
+
+
+
+.nav-tabs.header-tabs > li > a{
+    padding: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    
+}
+
+.nav-tabs.header-tabs > li.active{
+    margin-bottom: -5px;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+.nav-tabs.header-tabs > li.nav-title{
+    padding: 3px;
+    padding-left: 5px;
+    margin-right: 50px;
+    margin-top: -5px;
+    font-size: 20px;
+    font-weight: bold;
+    
+    
+}

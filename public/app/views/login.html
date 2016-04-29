@@ -60,7 +60,7 @@ and open the template in the editor.
                                     <div class="alert alert-warning" ng-if="errorMessage" role="alert" style="text-shadow: none">{{errorMessage}}</div>
                                     
                                     <div class="form-group">
-                                        <input ng-model="username" type="text" class="form-control" placeholder="Email">
+                                        <input ng-model="username" name="username" type="text" class="form-control" placeholder="Email" autocomplete="on">
                                     </div>
                                     
                                     <div class="form-group">
@@ -85,8 +85,9 @@ and open the template in the editor.
                                     
                                     
                                     <button type="button" class="btn btn-signin" ng-click="login()" >
-                                        
-                                        Sign in&nbsp;<img ng-if="loading" style="width: 15px; height: 15px;" src="http://localhost/cf-ui/public/app/img/loading.gif" />
+                                        <span ng-if="loading">Verifying ...</span>
+                                        <span ng-if="!loading">Sign in</span>
+                                        &nbsp;<img ng-if="loading" style="width: 15px; height: 15px;" src="http://localhost/cf-ui/public/app/img/loading.gif" />
                                     </button>
                                     
                                 </form>
