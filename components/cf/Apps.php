@@ -31,4 +31,32 @@ class Apps {
         return $http->execute();
     }
 
+    public function createApp($args){
+
+        $http = new cf_curl($this->apiUrl);
+        $http->setMethod(cf_curl::$METHOD_POST);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        $http->setParameters($args);
+        return $http->execute();
+    }
+
+    public function updateApp($args, $appguid){
+
+        $http = new cf_curl($this->apiUrl . '/' . $appguid);
+        $http->setMethod(cf_curl::$METHOD_PUT);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        $http->setParameters($args);
+        return $http->execute();
+    }
+
+    public function deleteApp($args, $appguid){
+
+        $http = new cf_curl($this->apiUrl . '/' . $appguid);
+
+        $http->setMethod(cf_curl::$METHOD_DELETE);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        $http->setParameters($args);
+        return $http->execute();
+    }
+
 }

@@ -99,15 +99,29 @@ class cf_curl{
                     break;
                 case self::$METHOD_POST:
                     $this->config[CURLOPT_POST] = 1;
-                    $this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+
+                    // http_build_query only used when a token is requested
+                    if(isset($this->parameters['username']) && isset($this->parameters['password'])){
+                        $this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    }else{
+                        $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
+                    }
+                    break;
+                case self::$METHOD_PUT:
+                    $this->config[CURLOPT_CUSTOMREQUEST] = 'PUT';
+                    $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
+                    //$this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    break;
+                case self::$METHOD_DELETE:
+                    $this->config[CURLOPT_CUSTOMREQUEST] = "DELETE";
+                    $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
+                    //$this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    break;
             }
         }
 
-        // start cURL request
         $handler = curl_init();
         curl_setopt_array($handler, $this->config);
-
-
 
         // Execute request and get response
         if (!($response = curl_exec($handler))) {
@@ -119,6 +133,7 @@ class cf_curl{
 
         // Return response in PHP readable way
         $response = json_decode($response);
+
         return $response;
     }
 
