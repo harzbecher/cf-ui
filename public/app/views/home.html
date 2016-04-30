@@ -18,12 +18,14 @@ and open the template in the editor.
 
         <script src="http://localhost/cf-ui/public/app/app.js" ></script>
         <script src="http://localhost/cf-ui/public/app/controllers/appsController.js" ></script>
+        <script src="http://localhost/cf-ui/public/app/controllers/homeController.js" ></script>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     
     <body ng-app="cf-gui" style="height: 90%; background-color: #3b3b3f; " ng-app="cf-gui">
-        <div class="container" style="height: 100%">
+        
+        <div class="container" style="height: 100%" ng-controller="home">
             <div class="row" style="background-color: #FFFFFF; height: 100%; position: relative" >
                 <div class="col-md-12" style="height: 100%">
 
@@ -48,9 +50,12 @@ and open the template in the editor.
                             <div class="row" style="height: 100%">
                                 <div style="padding-left: 15px; padding-right: 15px; padding-bottom: 15px;">
                                     <span class="glyphicon glyphicon-menu-hamburger"></span>
-                                    <select class="form-control">
-                                        <option>Dev</option>
+                                    
+                                    <select class="form-control" ng-model="activeSpace"
+                                           ng-options="space as space.entity.name for space in spaces track by spaces.metadata.guid" ng-change="changeActiveSpace()" >
+                                        <!--ption ng-repeat="space in spaces" value="{{space.metadata.guid}}">{{space.entity.name}}</option-->
                                     </select>
+                                    
                                 </div>
                                 
                                 <ul  id="myTabs" class="nav nav-pills nav-stacked">

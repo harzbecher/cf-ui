@@ -83,7 +83,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
         
         $http({
             method: 'GET',
-            url: controllerPath+'/'+$scope.spaceGuid ,
+            url: controllerPath,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
             // Verify and throw errors
@@ -152,15 +152,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
         
     }
     
-    // Events
-    
-    $scope.$on("spaceChanged", function(event, args){
-        $scope.spaceGuid = args.spaceGuid;
-        console.log($scope.spaceGuid);
-        $scope.getAppsList();
-    });
-    
-    
+    $scope.getAppsList();
     
     $scope.throwError = function($message){
         $scope.errorMessage = $message;

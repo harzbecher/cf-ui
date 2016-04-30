@@ -25,7 +25,7 @@ class login extends Mapache\Controller{
         
         // Verify Session and redirect if it is active
         if($this->session->isActive()){
-            header('Location:home');
+            header('Location: /cf-ui/home/');
         }
         
         // Load login view

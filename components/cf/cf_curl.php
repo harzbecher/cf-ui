@@ -101,6 +101,10 @@ class cf_curl{
             throw new Exception("Could not complete this request without a target URL");
         }
 
+        /**
+         * Methods and content type editions
+         * @author Fernando Espinosa <fernando.espinosa@ge.com>
+         */
         if(isset($this->parameters)){
             switch ($this->method){
                 case self::$METHOD_GET:
