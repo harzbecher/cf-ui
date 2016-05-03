@@ -15,7 +15,7 @@ example.controller('default', function($scope, $http){
     $scope.getInfo = function(){
         $http({
             method: 'POST',
-            url: 'http://localhost/cf_ui/cf-ui/General/Info',
+            url: '/cf-ui/General/Info',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
             $scope.info = res.data;
@@ -26,7 +26,7 @@ example.controller('default', function($scope, $http){
 
         $http({
             method: 'POST',
-            url: 'http://localhost/cf_ui/cf-ui/General/getToken',
+            url: '/cf-ui/General/getToken',
             data: 'username='+$scope.username+'&password='+$scope.password,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
@@ -44,7 +44,7 @@ example.controller('default', function($scope, $http){
         }
         $http({
             method: 'POST',
-            url: 'http://localhost/cf_ui/cf-ui/Apps/listApps',
+            url: '/cf-ui/Apps/listApps',
             data: 'token=' + $scope.token + '&spaceguid=' + $scope.spaceguid,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
@@ -59,7 +59,7 @@ example.controller('default', function($scope, $http){
         }
         $http({
             method: 'POST',
-            url: 'http://localhost/cf_ui/cf-ui/Spaces/listSpaces',
+            url: '/cf-ui/Spaces/listSpaces',
             data: 'token=' + $scope.token ,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
@@ -74,7 +74,7 @@ example.controller('default', function($scope, $http){
         }
         $http({
             method: 'POST',
-            url: 'http://localhost/cf_ui/cf-ui/Apps/createApp',
+            url: '/cf-ui/Apps/createApp',
             data: 'token='+$scope.token+'&appname='+$scope.appname+'&spaceguid='+$scope.spaceguid,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
@@ -90,7 +90,7 @@ example.controller('default', function($scope, $http){
         }
         $http({
             method: 'POST',
-            url: 'http://localhost/cf_ui/cf-ui/Apps/updateApp',
+            url: '/cf-ui/Apps/updateApp',
             data: 'token=' + $scope.token + '&appguid=' + $scope.appguid + '&appname=' + $scope.appname,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
@@ -105,7 +105,7 @@ example.controller('default', function($scope, $http){
         }
         $http({
             method: 'POST',
-            url: 'http://localhost/cf_ui/cf-ui/Apps/deleteApp',
+            url: '/cf-ui/Apps/deleteApp',
             data: 'token='+$scope.token+'&appguid='+$scope.appguid,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
@@ -120,7 +120,7 @@ example.controller('default', function($scope, $http){
         }
         $http({
             method: 'POST',
-            url: 'http://localhost/cf_ui/cf-ui/Services/listServices',
+            url: '/cf-ui/Services/listServices',
             data: 'token=' + $scope.token,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
