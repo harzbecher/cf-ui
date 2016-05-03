@@ -25,15 +25,14 @@ class cf_curl{
     private $parameters = null;
     private $parseMode = 'json';
 
+    private $parametersFormat = 'json';
+    private $possibleParametersFormats = array('json', 'http_query', 'raw');
+
     private $config = Array(
         CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_SSL_VERIFYPEER => 0,
         CURLOPT_HEADER => 0,
         CURLOPT_FOLLOWLOCATION => 1,
-        CURLOPT_HTTPHEADER => Array(
-            'Content-Type: application/x-www-form-urlencoded;charset=utf-8',
-            'Accept: application/json;charset=utf-8'
-        )
     );
     
 
@@ -78,10 +77,12 @@ class cf_curl{
         return $this->method;
     }
 
-    public function setParameters($parameters){
-        if(is_array($parameters)){
-            $this->parameters = $parameters;
+    public function setParameters($parameters, $formatInto = "json"){
+        if(in_array($formatInto, $this->possibleParametersFormats)){
+            $this->parametersFormat = $formatInto;
         }
+        
+        $this->parameters = $parameters;
     }
 
     public function appendHeaders($headers){
@@ -89,12 +90,37 @@ class cf_curl{
         if(!is_array($headers)){
             $headers = array($headers);
         }
+        
+        if(!isset($this->config[CURLOPT_HTTPHEADER])){
+            $this->config[CURLOPT_HTTPHEADER] = array();
+        }
 
         foreach ($headers as $header){
-          $this->config[CURLOPT_HTTPHEADER][count($this->config[CURLOPT_HTTPHEADER])] = $header;
+            $this->config[CURLOPT_HTTPHEADER][] = $header;
         }
     }
 
+    public function setToken($token){
+         $this->appendHeaders("Authorization: bearer {$token}");
+    }
+    
+    private function getFormattedParameters(){
+        $formatted = "";
+        switch($this->parametersFormat){
+            case 'json':
+                $formatted = json_encode($this->parameters);
+                break;
+            case 'http_query':
+                $formatted = http_build_query($this->parameters);
+                break;
+            case 'raw':
+            default:
+                $formatted = $this->parameters;
+                break;
+        }
+        return $formatted;
+    }
+    
     public function execute(){
 
         if(!isset($this->config[CURLOPT_URL]) || empty($this->config[CURLOPT_URL])){
@@ -108,26 +134,22 @@ class cf_curl{
         if(isset($this->parameters)){
             switch ($this->method){
                 case self::$METHOD_GET:
-                    $this->config[CURLOPT_URL] .= '?'.http_build_query($this->parameters);
+                    if(!preg_match('/\?/', $this->config[CURLOPT_URL])){
+                        $this->config[CURLOPT_URL] .= '?';
+                    }
+                    $this->config[CURLOPT_URL] .= http_build_query($this->parameters);
                     break;
                 case self::$METHOD_POST:
                     $this->config[CURLOPT_POST] = 1;
-                    // http_build_query only used when a token is requested
-                    if(isset($this->parameters['username']) && isset($this->parameters['password'])){
-                        $this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
-                    }else{
-                        $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
-                    }
+                    $this->config[CURLOPT_POSTFIELDS] = $this->getFormattedParameters();
                     break;
                 case self::$METHOD_PUT:
                     $this->config[CURLOPT_CUSTOMREQUEST] = 'PUT';
-                    $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
-                    //$this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    $this->config[CURLOPT_POSTFIELDS] = $this->getFormattedParameters();
                     break;
                 case self::$METHOD_DELETE:
                     $this->config[CURLOPT_CUSTOMREQUEST] = "DELETE";
-                    $this->config[CURLOPT_POSTFIELDS] = json_encode($this->parameters);
-                    //$this->config[CURLOPT_POSTFIELDS] = http_build_query($this->parameters);
+                    $this->config[CURLOPT_POSTFIELDS] = $this->getFormattedParameters();
                     break;
             }
         }
