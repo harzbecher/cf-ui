@@ -17,7 +17,7 @@ class home extends Controller
         $this->session = new Session();
         if(!$this->session->isActive()){
             echo $this->session->getErrorMessage();
-            header('Location:login');
+            header('Location: ' . BASE_URL . '/login');
         }
     }
 
