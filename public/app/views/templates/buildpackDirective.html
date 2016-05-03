@@ -1,0 +1,7 @@
+<div>
+    <select ng-model="ngModel" class="form-control">
+        <option value="" selected>- Auto detect -</option>
+        <option ng-repeat="buildpack in buildpacks" value="{{buildpack.entity.name}}">{{buildpack.entity.name}}</option>
+        <!-- ng-model="ngModel" ng-options="buildpack as buildpack.entity.name for buildpack in buildpacks track by buildpack.entity.name" ng-change="changeActiveSpace()" -->
+    </select>
+</div>

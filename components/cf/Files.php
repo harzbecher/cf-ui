@@ -29,7 +29,7 @@ class Files {
     public function ls($appGui, $instanceIndex, $path){
         
         if(!isset($appGui, $instanceIndex, $path)){
-            throw new Exception("Invalid data provided");
+            throw new \Exception("Invalid data provided");
         }
         
         $url = $this->apiUrl."/$appGui/instances/$instanceIndex/files/$path";

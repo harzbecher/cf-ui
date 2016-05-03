@@ -45,7 +45,7 @@ and open the template in the editor.
     padding-left: 0px;
 }
 
-.app-detail .panel{
+.app-detail .panel.main-panel{
     border-left: none;
 }
 
@@ -89,7 +89,7 @@ and open the template in the editor.
 .ops-panel{
     height: 100%;
     position: relative;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .group-wrapper{
@@ -109,12 +109,14 @@ and open the template in the editor.
     padding: 3px;
     padding-left: 5px;
     padding-right: 5px;
+    cursor: pointer;
     
 }
 
 .nav-tabs.header-tabs > li.active{
     margin-bottom: -5px;
     border-bottom: 1px solid #FFFFFF;
+    
 }
 
 .nav-tabs.header-tabs > li.nav-title{
@@ -124,6 +126,37 @@ and open the template in the editor.
     margin-top: -5px;
     font-size: 20px;
     font-weight: bold;
+    cursor: pointer;
+    
+}
+
+.list-group-item{}
+
+/* Lock Screen and placeholders*/
+
+.lockPanel{
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF;
+    position: absolute;
+    opacity: 0.5;
+    float: top;
+    z-index: 2;
+    text-align: center;
+    vertical-align: middle;
     
     
+    
+}
+
+.panel .placeholder{
+    width: 100%;
+    height: 100%;
+    background-color: #c4c3cb;
+    position: absolute;
+    opacity: 0.5;
+    float: top;
+    z-index: 2;
+    text-align: center;
+    vertical-align: middle;
 }

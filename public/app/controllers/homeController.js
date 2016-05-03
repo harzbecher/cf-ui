@@ -23,9 +23,10 @@ cfGui.controller('home', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                 $scope.throwError(res.data);
             }
             
+            // Dump spaces
             $scope.spaces = res.data.resources;
-            // Set default space
             
+            // Set first element as active space
             $scope.setActiveSpace($scope.spaces[0].metadata.guid);
         });
     };
@@ -37,7 +38,7 @@ cfGui.controller('home', ['$scope', '$http', 'routeBuilder', 'Shared', function(
         $scope.$broadcast("spaceChanged", {spaceGuid: $scope.activeSpace});
         
         
-        console.log($scope.activeSpace);
+        //console.log($scope.activeSpace);
         
     }
     

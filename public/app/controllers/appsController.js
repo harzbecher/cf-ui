@@ -1,11 +1,14 @@
 
 cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function($scope, $http, routeBuilder, Shared){
     
-    
-    console.log(Shared.activeSpace);
-    
     $scope.errorMessage = "";
     $scope.loading = false;
+    
+    $scope.loadingApps = false;
+    $scope.lockApps = false;
+    
+    $scope.loadingSettings = false;
+    $scope.lockSettings = false;
     
     $scope.selectedApp = null;
     
@@ -25,65 +28,175 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
     
     $scope.activeSection = null;
     
+    /**
+     * Application model
+     */
+    $scope.applicationModel = {
+        "attributes": {
+            "name": {
+                "name": "name",
+                "type": "text",
+                "required": true,
+                "value": null,
+                "visible": true,
+                "placeholder": "Application Name"
+            },
+            "space_guid": {
+                "name": "space_guid",
+                "type": "text",
+                "required": true,
+                "value": null,
+                "visible": false,
+                "placeholder": null
+            },
+            "instances": {
+                "name": "instances",
+                "type": "number",
+                "required": true,
+                "value": null,
+                "visible": true,
+                "placeholder": "Number of instances"
+            },
+            "buildpack": {
+                "name": "buildpack",
+                "type": "buildpack",
+                "required": false,
+                "value": null,
+                "visible": true,
+                "placeholder": null
+            },
+            "state": {
+                "name": "state",
+                "type": "state",
+                "required": false,
+                "value": null,
+                "visible": true,
+                "placeholder": "Initial state"
+            },
+            "command": {
+                "name": "command",
+                "type": "text",
+                "required": false,
+                "value": null,
+                "visible": true,
+                "placeholder": "Application Command"
+            },
+            "disk_quota": {
+                "name": "disk_quota",
+                "type": "number",
+                "required": false,
+                "value": null,
+                "visible": true,
+                "placeholder": "Disk size"
+            },
+            "memory": {
+                "name": "memory",
+                "type": "number",
+                "required": false,
+                "value": null,
+                "visible": true,
+                "placeholder": "Available memory"
+            },
+            "ports": {
+                "name": "ports",
+                "type": "text",
+                "required": false,
+                "value": null,
+                "visible": true,
+                "placeholder": "Application port"
+            }
+        }
+    }
     
     
-    $scope.selectApp = function (appObject){
-        $scope.selectedApp = appObject;
-        $scope.loadSection($scope.defaultSection);
-    };
-    
-    $scope.updateFolders = function(application){
+    /**
+     * Creates an application using application model
+     * @returns {undefined}
+     */
+    $scope.create = function(){
+        // Set active space
+        $scope.applicationModel.attributes.space_guid.value = Shared.activeSpace;
+        // Set default instance value
+        $scope.applicationModel.attributes.instances.value = 
+                ($scope.applicationModel.attributes.instances.value !== null)? 
+                    $scope.applicationModel.attributes.instances.value : 1;
         
-        // Set files object
-        if(application.files !== undefined){
+        // Validate data
+        if($scope.applicationModel.attributes.name === null ||
+                $scope.applicationModel.attributes.space === null ||
+                $scope.applicationModel.attributes.instances === null){
+            $scope.throwError("Missing required data");
+        }
+        
+        // Build URL
+        var controllerPath = routeBuilder.getController('apps')+'/add';
+        
+        
+        $http.post(controllerPath, JSON.stringify($scope.applicationModel))
+            .success(function (res) {
+                
+                // Verify and throw errors
+                if(res.status === 'error'){
+                    $scope.throwError(res.data);
+                    return;
+                }
+
+                if(res.data.error_code !== undefined){
+                    $scope.throwError(res.data.description);
+                    return;
+                }
+                
+                $scope.apps.push(res.data);
+                $scope.closeAddAppModal();
+            });
+    }
+    
+    
+    
+    
+    /**
+     * Loads defined application section
+     * @param {type} section
+     * @returns {Boolean}
+     */
+    $scope.loadSection = function(section){
+        
+        if($scope.selectedApp === undefined || $scope.selectedApp === null){
             return true;
         }
         
-        var guid = application.metadata.guid;
+        // Verify section
+        if(section === undefined || section === null){
+            section = $scope.defaultSection;
+        }
         
-        var controllerPath = routeBuilder.getController('apps')+'/listFiles';
-        var parameters = "guid="+guid+
-                "&instance_index="+0+
-                "&path=app/htdocs";
-        
-        $http({
-            method: 'GET',
-            url: controllerPath+"?"+parameters,
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        }).success(function(res){
-            // Verify and throw errors
-            if(res.status === 'error'){
-                $scope.throwError(res.data);
-            }
-            
-            application.files = res.data;
-            console.log(application);
-        });
-        
-        
-    }
-    
-    $scope.loadSection = function(section){
         $scope.activeSection = section;
+        
         switch($scope.activeSection){
             case 'Summary':
-                $scope.getEnv($scope.selectedApp.metadata.guid);
-                console.log($scope.selectedApp.env);
+                $scope.getEnvForSelectedApp();
+                break;
             case 'Files':
-                $scope.updateFolders($scope.selectedApp);
+                $scope.updateFoldersForSelectedApp($scope.selectedApp);
+                break;
         }
     }
     
     
+    /**
+     * Retrieves an application list
+     * @returns {undefined}
+     */
     $scope.getAppsList = function(){
         
-        $scope.loading = true;
+        $scope.loadingApps = true;
+        
         
         var controllerPath = routeBuilder.getController('apps')+'/listApps';
         
         $http({
             method: 'GET',
-            url: controllerPath+'/'+$scope.spaceGuid ,
+            url: controllerPath+'/'+Shared.activeSpace ,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(res){
             // Verify and throw errors
@@ -91,20 +204,33 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                 $scope.throwError(res.data);
             }
             
+            
             $scope.apps = res.data.resources;
-            console.log($scope.apps);
             
             // Stop loader
-            $scope.loading = false;
+            $scope.loadingApps = false;
+            $scope.lockApps = false;
         });
         
         
         return;
     };
     
-    $scope.getEnv = function (guid){
+    /**
+     * Get env for selected application
+     * @returns true
+     */
+    $scope.getEnvForSelectedApp = function (){
         
-        var controllerPath = routeBuilder.getController('apps')+'/getEnv/'+guid;
+        if($scope.selectedApp.env !== undefined){
+            return true;
+        }
+        
+        $scope.lockApps = true;
+        $scope.lockSettings = true;
+        $scope.loadingSettings = true;
+        
+        var controllerPath = routeBuilder.getController('apps')+'/getEnv/'+$scope.selectedApp.metadata.guid;
         
         $http({
             method: 'GET',
@@ -118,6 +244,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
             
             var env = res.data;
             
+            // Dump data into selected app
             $scope.selectedApp.env = {
                 'uris' : env.application_env_json.VCAP_APPLICATION.uris,
                 'limits' : env.application_env_json.VCAP_APPLICATION.limits,
@@ -127,20 +254,22 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                 },
                 'users'  : env.application_env_json.VCAP_APPLICATION.users 
             };
-            console.log(env);
             
-            // Stop loader
-            $scope.loading = false;
+            // Unlock Apps
+            $scope.lockApps = false;
+            $scope.lockSettings = false;
+            $scope.loadingSettings = false;
         });
+        
+        return true;
     }
     
-    $scope.getFileList = function(guid, instanceIndex, path){
-        
-        
-        
-        
-    };
     
+    /**
+     * Returns badge class for defined state
+     * @param {String} state
+     * @returns {String}
+     */
     $scope.getStateClass = function(state){
         switch(state){
             case 'STOPPED':
@@ -149,14 +278,52 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                 return 'label-success';
                 
         }
+    }
+    
+    $scope.updateFoldersForSelectedApp = function(application){
+        
+        // Set files object
+        if(application.files !== undefined){
+            return true;
+        }
+        
+        var guid = application.metadata.guid;
+        
+        var controllerPath = routeBuilder.getController('apps')+'/listFiles';
+        var parameters = "guid="+guid+
+                "&instance_index="+0+
+                "&path=";
+        
+        $http({
+            method: 'GET',
+            url: controllerPath+"?"+parameters,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function(res){
+            // Verify and throw errors
+            if(res.status === 'error'){
+                $scope.throwError(res.data);
+                return;
+            }
+            
+            if(res.data.error_code !== undefined){
+                $scope.throwError(res.data.description);
+                return;
+            }
+            
+            application.files = res.data;
+        });
+        
         
     }
     
-    // Events
+    // UI Events
+    $scope.selectApp = function (appObject){
+        $scope.selectedApp = appObject;
+        $scope.loadSection($scope.defaultSection);
+    };
     
+    // Events
     $scope.$on("spaceChanged", function(event, args){
-        $scope.spaceGuid = args.spaceGuid;
-        console.log($scope.spaceGuid);
         $scope.getAppsList();
     });
     
@@ -164,6 +331,13 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
     
     $scope.throwError = function($message){
         $scope.errorMessage = $message;
+        console.log($message);
     }
+    
+    // Jquery hybrid functions
+    $scope.closeAddAppModal = function(){
+        $('#addAppModal').modal('hide');
+    }
+    
     
 }]);
