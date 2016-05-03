@@ -1,7 +1,7 @@
 <?php
 namespace cf\AppUpload;
 
-require("ResourcesInterface.php");
+require_once("ResourcesInterface.php");
 
 
 /**

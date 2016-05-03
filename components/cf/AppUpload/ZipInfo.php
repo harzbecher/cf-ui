@@ -2,7 +2,7 @@
 
 namespace cf\AppUpload;
 
-require("ResourcesInterface.php");
+require_once("ResourcesInterface.php");
 
 /**
  * Cloud foundry Apps Upload
