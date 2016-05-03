@@ -36,7 +36,7 @@ a:hover {
 html,
 body {
 /*css for full size background image*/
-  background: url(http://localhost/cf-ui/public/app/img/bg-building.png) no-repeat center center fixed; 
+  background: url(/cf-ui/public/app/img/bg-building.png) no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

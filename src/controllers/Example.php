@@ -18,7 +18,7 @@ class Example extends Controller
     }
 
     function indexAction(){
-        $this->view->render('Example_view');
+        $this->view->render('Example_view.php');
     }
 
     function info(){
@@ -34,4 +34,5 @@ class Example extends Controller
         $response->setData(\cf\CloudFoundry::getToken("$username", "$password", "$this->loginEndPoint/oauth/token"));
         $response->display();
     }
+}
 
