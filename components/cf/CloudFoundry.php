@@ -32,7 +32,7 @@ class CloudFoundry {
 
         // Prepare curl request
         $http = new cf_curl($authEndpoint.'/oauth/token', cf_curl::$METHOD_POST);
-        $http->setParameters($post);
+        $http->setParameters($post, 'http_query');
         $http->appendHeaders('Authorization: Basic Y2Y6');
 
         return $http->execute();
@@ -47,7 +47,7 @@ class CloudFoundry {
 
         // Prepare curl request
         $http = new cf_curl($authEndpoint, cf_curl::$METHOD_POST);
-        $http->setParameters($post);
+        $http->setParameters($post, 'http_query');
         $http->appendHeaders('Authorization: Basic Y2Y6');
 
         return $http->execute();
