@@ -21,7 +21,8 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
         'Summary',
         'Files',
         'Config',
-        'Services'
+        'Services',
+        'Push'
     ];
     
     $scope.defaultSection = 'Summary';
@@ -181,6 +182,33 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                 break;
         }
     }
+    
+    $scope.getTargetForUpload = function(){
+        return routeBuilder.getController('UploadApps') + '/UploadAction/' + $scope.selectedApp.metadata.guid + '/';
+    }
+    
+    $scope.fileUploadError = function( $file, $message, $flow ){
+        console.log($file);
+        console.log($message);
+    }
+    
+    $scope.fileUploadComplete = function( $flow ){
+        $http.post(routeBuilder.getController('UploadApps') + '/CompleteUploadAction/' + $scope.selectedApp.metadata.guid + '/')
+            .success(function (response) {
+                
+                // Verify and throw errors
+                if(response.status === 'error'){
+                    $scope.throwError(response.data);
+                    return;
+                }
+
+                if(response.data.error_code !== undefined){
+                    $scope.throwError(res.data.description);
+                    return;
+                }
+            });
+    }
+
     
     
     /**

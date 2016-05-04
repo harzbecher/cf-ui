@@ -1,4 +1,4 @@
-var cfGui = angular.module("cf-gui", []);
+var cfGui = angular.module("cf-gui", ['flow']);
 
 cfGui.value('config', {
     'host': '/cf-ui/',

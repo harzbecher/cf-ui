@@ -25,7 +25,7 @@ class ZipCreator implements ResourcesInterface {
 		}
 	}
 	
-	public function __destructs(){
+	public function __destruct(){
 		$this->removeTempFile();
 	}
 
@@ -36,6 +36,10 @@ class ZipCreator implements ResourcesInterface {
 		$this->path = realpath($path);
 		$this->createZip();
 	}
+	
+        public function getZipPath(){
+            return $this->tempFile;
+        }
 	
 	public function getResources(){
 		return $this->resources;
@@ -60,7 +64,7 @@ class ZipCreator implements ResourcesInterface {
 				// Get real and relative path for current file
 				$filePath = $file->getRealPath();
 				$relativePath = substr($filePath, strlen($this->path) + 1);
-
+                                $relativePath = preg_replace("/\\\/", '/', $relativePath);
 				// Add current file to archive
 				$this->zip->addFile($filePath, $relativePath);
 				
@@ -74,8 +78,6 @@ class ZipCreator implements ResourcesInterface {
 
 		// Zip archive will be created only after closing object
 		$this->zip->close();
-		echo $this->tempFile;
-		
 	}
 	
 	private function getTempFile(){
