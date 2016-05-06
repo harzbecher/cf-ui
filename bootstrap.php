@@ -31,8 +31,8 @@ $config = Array(
             'Session' => 'components/Session.php'
         ),
         'views_path' => APPLICATION_PATH . '/public/app/views/'
-    ),
-    'proxy' => 'PITC-Zscaler-Americas-Cincinnati3PR.proxy.corporate.ge.com:80'
+    )//,
+    //'proxy' => 'PITC-Zscaler-Americas-Cincinnati3PR.proxy.corporate.ge.com:80'
 
 );
 

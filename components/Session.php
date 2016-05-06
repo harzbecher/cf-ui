@@ -162,7 +162,7 @@ class Session{
         $refreshToken = $_SESSION['cf_access']['refresh_token'];
         $tokenData = cf\CloudFoundry::refreshToken($refresh_token, $authEndpoint);
         
-        if(!$this->dumpAccessData($accessData)){
+        if(!$this->dumpAccessData($tokenData)){
             return false;
         }
         

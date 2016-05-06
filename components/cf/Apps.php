@@ -3,6 +3,8 @@
 namespace cf;
 require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'cf_curl.php';
 
+set_time_limit(0);
+
 /**
  * Cloud foundry apps REST Client
  * @author: Víctor Hugo garcía Harzbecher <victorhugo.garcia@ge.com >
@@ -20,36 +22,35 @@ class Apps {
         $this->endpoint = $endpoint;
         $this->token = $token;
         $this->apiUrl = $endpoint."/v$version/apps";
-
     }
 
     public function listApps($args=null){
-        
+
         $http = new cf_curl($this->apiUrl);
         $http->setMethod(cf_curl::$METHOD_GET);
         $http->appendHeaders("Authorization: bearer $this->token");
         if(isset($args)){
             $http->setParameters($args);
         }
-        
+
         return $http->execute();
     }
-    
-    
-    
+
+
+
     public function getEnv($appguid){
-        
+
         if(!isset($appguid)){
             throw new Exception('Invalid guid provided');
         }
-        
+
         $http = new cf_curl($this->apiUrl."/$appguid/env");
         $http->setMethod(cf_curl::$METHOD_GET);
         $http->appendHeaders("Authorization: bearer $this->token");
-        
+
         return $http->execute();
     }
-    
+
     public function createApp($args){
 
         $http = new cf_curl($this->apiUrl);
@@ -77,7 +78,14 @@ class Apps {
         $http->setParameters($args);
         return $http->execute();
     }
-    
-    
+
+    public function restageApp($args, $appguid){
+        $http = new cf_curl($this->apiUrl . '/' . $appguid . '/restage');
+        $http->setMethod(cf_curl::$METHOD_POST);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        $http->setParameters($args);
+        return $http->execute();
+    }
+
 
 }

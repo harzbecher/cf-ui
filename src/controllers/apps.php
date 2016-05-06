@@ -7,89 +7,203 @@
  * Time: 3:27 PM
  */
 use Mapache\Controller;
+use Mapache\Response;
 
-class apps extends Controller
+
+/**
+ * Apps REST Service
+ * @author: Víctor Hugo garcía Harzbecher <victorhugo.garcia@ge.com >
+ * @author: Fernando Espinosa <fernando.espinosa@ge.com>
+ * @version: 1.0
+ * @since: April 2016
+ */
+class Apps extends Controller
 {
+
     private $session = null;
+    private $cfApps = null;
+    private $cfApps3 = null;
 
     public function __construct(){
         parent::__construct();
-        
         $this->session = new Session();
         if(!$this->session->isActive()){
             echo $this->session->getErrorMessage();
             header('Location:login');
         }
+
+        // Initialize Apps API Client
+        $this->cfApps = new cf\Apps(
+            $this->session->getEndPoint(),
+            2,
+            $this->session->getToken());
+
+        $this->cfApps3 = new cf\Apps(
+            $this->session->getEndPoint(),
+            3,
+            $this->session->getToken());
     }
-    
-    public function IndexAction(){
-        $this->view->render('apps.html');
+
+    function indexAction(){
+        //$this->view->render('Example_view');
+        $cfApps3 = new cf\Apps(
+            $this->session->getEndPoint(),
+            3,
+            $this->session->getToken());
     }
-            
-    function listApps(){
-        
-        $response = new \Mapache\Response();
-        try {
-            $apps = new cf\Apps($this->session->getEndPoint(), 
-                '2', 
-                $this->session->getToken());
-            
-            $response->setData($apps->listApps());
-            $response->setStatus(\Mapache\Response::$STAT_OK);            
+
+    function listApps($spaceguid){
+
+        // Validate inputs
+        if(!isset($spaceguid) || empty($spaceguid)){
+            throw new Exception('Invalid space guid provided');
+        }
+
+        // Prepare Response
+        $response = new Response(Response::$RES_QUERY);
+
+        // Set attributes
+        $params = Array(
+            'q' => 'space_guid:' . $spaceguid
+        );
+
+        try{
+            // Retrieve data
+            $applications = $this->cfApps->listApps($params);
+            $response->setStatus(Response::$STAT_OK);
+            $response->setData($applications);
         } catch (Exception $ex) {
-            $response->setStatus(\Mapache\Response::$RES_ERROR);
+            // Handle errors
+            $response->setStatus(Response::$STAT_ERROR);
             $response->setData($ex->getMessage());
         }
-        
+
+        // Display Respone
         $response->display();
-        
     }
-    
-    function listFiles(){
-        $guid = filter_input(INPUT_GET, 'guid');
-        $instance = filter_input(INPUT_GET, 'instance_index');
-        $path = filter_input(INPUT_GET, 'path');
-        
-        $response = new \Mapache\Response();
-        try {
-            
-            if(!isset($guid, $instance, $path)){
-                throw new Exception("Missing required parameters");
+
+    public function getEnv($appguid){
+
+        // Validate inputs
+        if(!isset($appguid) || empty($appguid)){
+            throw new Exception('Invalid application guid provided');
+        }
+
+        // Prepare Response
+        $response = new Response(Response::$RES_QUERY);
+
+        try{
+            // Retrieve data
+            $applications = $this->cfApps->getEnv($appguid);
+            $response->setStatus(Response::$STAT_OK);
+            $response->setData($applications);
+        } catch (Exception $ex) {
+            // Handle errors
+            $response->setStatus(Response::$STAT_ERROR);
+            $response->setData($ex->getMessage());
+        }
+
+        // Display Respone
+        $response->display();
+
+    }
+
+
+    function add(){
+
+        // Read json post
+        $json = file_get_contents('php://input');
+        $applicationData = json_decode($json);
+
+        $params = Array();
+
+
+        // Serialize attributes into params
+        foreach($applicationData->attributes as $attribute){
+            if(isset($attribute->value) && !empty($attribute->value)){
+                $params[$attribute->name] = $attribute->value;
             }
-            
-            $files = new cf\Files(
-                $this->session->getEndPoint(), 
-                '2', 
-                $this->session->getToken());
-            
-            $response->setData($files->ls($guid, $instance, $path));
-            $response->setStatus(\Mapache\Response::$STAT_OK);            
+        }
+
+        //print_r($params);
+        //exit;
+
+        // Prepare Response
+        $response = new Response(Response::$RES_QUERY);
+
+        try{
+            // Retrieve data
+            $status = $this->cfApps->createApp($params);
+            $response->setStatus(Response::$STAT_OK);
+            $response->setData($status);
         } catch (Exception $ex) {
-            $response->setStatus(\Mapache\Response::$RES_ERROR);
+            // Handle errors
+            $response->setStatus(Response::$STAT_ERROR);
             $response->setData($ex->getMessage());
         }
-        
+
+        // Display Respone
         $response->display();
-        
     }
-    
-    function getEnv($guid){
-        
-        $response = new \Mapache\Response();
-        try {
-            $apps = new cf\Apps($this->session->getEndPoint(), 
-                '2', 
+
+
+    function listFiles(){
+
+        $guid = filter_input(INPUT_GET, 'guid');
+        $instanceIndex = filter_input(INPUT_GET, 'instance_index');
+        $path = filter_input(INPUT_GET, 'path');
+
+
+        $cfFiles = new cf\Files(
+                $this->session->getEndPoint(),
+                2,
                 $this->session->getToken());
-            
-            $response->setData($apps->getEnv($guid));
-            $response->setStatus(\Mapache\Response::$STAT_OK);            
-        } catch (Exception $ex) {
-            $response->setStatus(\Mapache\Response::$RES_ERROR);
-            $response->setData($ex->getMessage());
-        }
-        
+
+        $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
+        $response->setData($cfFiles->ls($guid, $instanceIndex, $path));
         $response->display();
-        
+    }
+
+
+
+    function deleteApp(){
+        $token = filter_input(INPUT_POST, 'token');
+        $appguid = filter_input(INPUT_POST, 'appguid');
+
+        $params = Array(
+        );
+
+        $cfApps = new cf\Apps($this->endPoint, 2, $token);
+
+        $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
+        $response->setData($this->cfApps->deleteApp($params, $appguid));
+        $response->display();
+    }
+
+    function updateApp(){
+        $token = filter_input(INPUT_POST, 'token');
+        $appguid = filter_input(INPUT_POST, 'appguid');
+        //$name = filter_input(INPUT_POST, 'appname');
+        $state = filter_input(INPUT_POST, 'state');
+
+        $params = Array(
+            "state" => $state
+        );
+
+        $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
+        $response->setData($this->cfApps->updateApp($params, $appguid));
+        $response->display();
+    }
+
+    function restageApp(){
+        $appguid = filter_input(INPUT_POST, 'appguid');
+
+        $params = Array(
+        );
+
+        $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
+        $response->setData($this->cfApps->restageApp($params, $appguid));
+        $response->display();
     }
 
 }
