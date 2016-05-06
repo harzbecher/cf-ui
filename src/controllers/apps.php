@@ -189,5 +189,29 @@ class Apps extends Controller
         $response->setData($cfApps->updateApp($params, $appguid));
         $response->display();
     }
+    
+    function addRoute(){
+        
+         // Read json post
+        $appguid = filter_input(INPUT_GET, 'app_guid');
+        $routeguid = filter_input(INPUT_GET, 'route_guid');
+        
+        // Prepare Response
+        $response = new Response(Response::$RES_QUERY);
+        
+        try{
+            // Retrieve data
+            $status = $this->cfApps->addRoute($routeguid, $appguid);
+            $response->setStatus(Response::$STAT_OK);
+            $response->setData($status);
+        } catch (Exception $ex) {
+            // Handle errors
+            $response->setStatus(Response::$STAT_ERROR);
+            $response->setData($ex->getMessage());
+        }
+
+        // Display Respone
+        $response->display();
+    }
 
 }

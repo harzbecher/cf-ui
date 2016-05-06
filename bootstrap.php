@@ -28,6 +28,7 @@ $config = Array(
             'cf\Files' => 'components/cf/Files.php',
             'cf\Spaces' => 'components/cf/Spaces.php',
             'cf\Buildpacks' => 'components/cf/Buildpacks.php',
+            'cf\Routes' => 'components/cf/Routes.php',
             'Session' => 'components/Session.php'
         ),
         'views_path' => APPLICATION_PATH . '/public/app/views/'

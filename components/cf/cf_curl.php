@@ -128,6 +128,23 @@ class cf_curl{
         if(!isset($this->config[CURLOPT_URL]) || empty($this->config[CURLOPT_URL])){
             throw new Exception("Could not complete this request without a target URL");
         }
+        
+        /**
+         * @author Victor garcia <victorhugo.garcia@ge.com>
+         */
+        switch($this->method){
+            case self::$METHOD_GET:
+                break;
+            case self::$METHOD_POST:
+                $this->config[CURLOPT_POST] = true;
+                break;
+            case self::$METHOD_PUT:
+                $this->config[CURLOPT_CUSTOMREQUEST] = 'PUT';
+                break;
+            case self::$METHOD_DELETE:
+                $this->config[CURLOPT_CUSTOMREQUEST] = "DELETE";
+                break;
+        }
 
         /**
          * Methods and content type editions
@@ -142,15 +159,12 @@ class cf_curl{
                     $this->config[CURLOPT_URL] .= http_build_query($this->parameters);
                     break;
                 case self::$METHOD_POST:
-                    $this->config[CURLOPT_POST] = 1;
                     $this->config[CURLOPT_POSTFIELDS] = $this->getFormattedParameters();
                     break;
                 case self::$METHOD_PUT:
-                    $this->config[CURLOPT_CUSTOMREQUEST] = 'PUT';
                     $this->config[CURLOPT_POSTFIELDS] = $this->getFormattedParameters();
                     break;
                 case self::$METHOD_DELETE:
-                    $this->config[CURLOPT_CUSTOMREQUEST] = "DELETE";
                     $this->config[CURLOPT_POSTFIELDS] = $this->getFormattedParameters();
                     break;
             }

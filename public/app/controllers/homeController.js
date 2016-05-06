@@ -26,18 +26,18 @@ cfGui.controller('home', ['$scope', '$http', 'routeBuilder', 'Shared', function(
             // Dump spaces
             $scope.spaces = res.data.resources;
             
+            console.log($scope.spaces);
             // Set first element as active space
-            $scope.setActiveSpace($scope.spaces[0].metadata.guid);
+            $scope.activeSpace = $scope.spaces[0];
+            $scope.setActiveSpace();
+            //$scope.setActiveSpace();
         });
     };
     
     
-    $scope.setActiveSpace = function(spaceGuid){
-        $scope.activeSpace = spaceGuid;
-        Shared.activeSpace = $scope.activeSpace;
-        $scope.$broadcast("spaceChanged", {spaceGuid: $scope.activeSpace});
-        
-        
+    $scope.setActiveSpace = function(){
+        Shared.activeSpace = $scope.activeSpace.metadata.guid;
+        $scope.$broadcast("spaceChanged", {spaceGuid: Shared.activeSpace});
         //console.log($scope.activeSpace);
         
     }

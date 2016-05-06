@@ -18,6 +18,7 @@ cfGui.factory('routeBuilder', ['config', function(config){
 cfGui.factory('Shared', function(){
     var Shared = {
         activeSpace: null,
+        activeDomain: '2a4227ca-1fd5-4c19-a284-29ab47650c8b' //Hardcoded
     }
     
     return Shared;
