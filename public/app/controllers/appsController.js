@@ -11,7 +11,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
 
     $scope.loadingSettings = false;
     $scope.lockSettings = false;
-    
+    $scope.loadingSettingsMessage = "Loading content for ";
     
     
     $scope.selectedApp = null;
@@ -214,19 +214,37 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
     }
 
     $scope.fileUploadComplete = function( $flow ){
+		$scope.lockApps = true;
+		$scope.lockSettings = true;
+		$scope.loadingSettings = true;
+		
+		var loadingMessage = $scope.loadingSettingsMessage;
+		$scope.loadingSettingsMessage = "Pushing files into ";
+		$scope.loadingSettings = true;
+		
         $http.post(routeBuilder.getController('UploadApps') + '/CompleteUploadAction/' + $scope.selectedApp.metadata.guid + '/')
             .success(function (response) {
-
-                // Verify and throw errors
+				$scope.lockApps = false;
+				
+               // Verify and throw errors
                 if(response.status === 'error'){
                     $scope.throwError(response.data);
-                    return;
+					return;
                 }
 
                 if(response.data.error_code !== undefined){
                     $scope.throwError(res.data.description);
                     return;
                 }
+								
+				//Perform restart and restage of the app to apply the new files being pushed.
+				$scope.stopApp($scope.selectedApp.metadata.guid);
+				$scope.startApp($scope.selectedApp.metadata.guid);
+				$scope.restageApp($scope.selectedApp.metadata.guid);
+				
+				$scope.lockSettings = false;
+				$scope.loadingSettingsMessage = loadingMessage;
+				$scope.loadingSettings = false;
             });
     }
 

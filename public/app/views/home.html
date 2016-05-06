@@ -174,7 +174,7 @@ and open the template in the editor.
                                                 <!-- Lock panel -->
                                                 <div class="lockPanel" ng-hide="!lockSettings && !loadingSettings" >
                                                     <loader ng-hide="!loadingSettings">
-                                                        Loading content for {{selectedApp.entity.name}}<br/> please wait
+                                                        {{loadingSettingsMessage}} {{selectedApp.entity.name}}<br/> please wait
                                                     </loader>
                                                 </div>
                                                 <!-- /.Lock panel -->
