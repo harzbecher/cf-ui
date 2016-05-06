@@ -22,6 +22,7 @@ class Apps extends Controller
 
     private $session = null;
     private $cfApps = null;
+    private $cfApps3 = null;
 
     public function __construct(){
         parent::__construct();
@@ -36,13 +37,18 @@ class Apps extends Controller
             $this->session->getEndPoint(),
             2,
             $this->session->getToken());
+
+        $this->cfApps3 = new cf\Apps(
+            $this->session->getEndPoint(),
+            3,
+            $this->session->getToken());
     }
 
     function indexAction(){
         //$this->view->render('Example_view');
         $cfApps3 = new cf\Apps(
-            $this->session->getEndPoint(), 
-            3, 
+            $this->session->getEndPoint(),
+            3,
             $this->session->getToken());
     }
 
@@ -170,51 +176,33 @@ class Apps extends Controller
         $cfApps = new cf\Apps($this->endPoint, 2, $token);
 
         $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
-        $response->setData($cfApps->deleteApp($params, $appguid));
+        $response->setData($this->cfApps->deleteApp($params, $appguid));
         $response->display();
     }
 
     function updateApp(){
         $token = filter_input(INPUT_POST, 'token');
         $appguid = filter_input(INPUT_POST, 'appguid');
-        $name = filter_input(INPUT_POST, 'appname');
+        //$name = filter_input(INPUT_POST, 'appname');
+        $state = filter_input(INPUT_POST, 'state');
 
         $params = Array(
-            "name" => $name
+            "state" => $state
         );
 
-        $cfApps = new cf\Apps($this->endPoint, 2, $token);
-
         $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
-        $response->setData($cfApps->updateApp($params, $appguid));
+        $response->setData($this->cfApps->updateApp($params, $appguid));
         $response->display();
     }
 
-    function stopApp(){
-        $token = filter_input(INPUT_POST, 'token');
+    function restageApp(){
         $appguid = filter_input(INPUT_POST, 'appguid');
 
         $params = Array(
         );
 
-        $cfApps = new cf\Apps($this->endPoint, 3, $token);
-
         $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
-        $response->setData($cfApps->stopApp($params, $appguid));
-        $response->display();
-    }
-
-    function startApp(){
-        $token = filter_input(INPUT_POST, 'token');
-        $appguid = filter_input(INPUT_POST, 'appguid');
-
-        $params = Array(
-        );
-
-        $cfApps = new cf\Apps($this->endPoint, 3, $token);
-
-        $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
-        $response->setData($cfApps->startApp($params, $appguid));
+        $response->setData($this->cfApps->restageApp($params, $appguid));
         $response->display();
     }
 
