@@ -3,6 +3,8 @@
 namespace cf;
 require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'cf_curl.php';
 
+set_time_limit(0);
+
 /**
  * Cloud foundry apps REST Client
  * @author: Víctor Hugo garcía Harzbecher <victorhugo.garcia@ge.com >
@@ -20,7 +22,6 @@ class Apps {
         $this->endpoint = $endpoint;
         $this->token = $token;
         $this->apiUrl = $endpoint."/v$version/apps";
-
     }
 
     public function listApps($args=null){
@@ -78,24 +79,13 @@ class Apps {
         return $http->execute();
     }
 
-    public function stopApp($args, $appguid){
-        $http = new cf_curl($this->apiUrl . '/' . $appguid . '/stop');
-
-        $http->setMethod(cf_curl::$METHOD_PUT);
+    public function restageApp($args, $appguid){
+        $http = new cf_curl($this->apiUrl . '/' . $appguid . '/restage');
+        $http->setMethod(cf_curl::$METHOD_POST);
         $http->appendHeaders("Authorization: bearer $this->token");
         $http->setParameters($args);
         return $http->execute();
     }
-
-    public function startApp($args, $appguid){
-        $http = new cf_curl($this->apiUrl . '/' . $appguid . '/start');
-
-        $http->setMethod(cf_curl::$METHOD_PUT);
-        $http->appendHeaders("Authorization: bearer $this->token");
-        $http->setParameters($args);
-        return $http->execute();
-    }
-
 
 
 }
