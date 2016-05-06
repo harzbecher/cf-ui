@@ -105,32 +105,53 @@ and open the template in the editor.
                                                 </div>
                                                 
                                                 <!-- Applications list -->
-                                                <div class="list-group" style="height: 100%; position: relative; overflow: auto">
+                                                <div class="list-group" style="height: 100%; position: relative; overflow: auto; ">
+                                                    
 
                                                     <a ng-repeat="app in apps" href="#" 
                                                        class="list-group-item" 
-                                                       style="border-radius: 0px"  
+                                                       style="border-radius: 0px; margin: 0px;padding: 0px;"  
                                                        ng-class="app.entity.staging_failed_description == undefined ? '' : 'list-group-item-warning'" 
-                                                       ng-click="selectApp(app)">
-                                                        <span class="label" ng-class="getStateClass(app.entity.state)">
-                                                              {{app.entity.state}}
-                                                        </span> &nbsp;
-                                                        <h4 class="list-group-item-heading" style="display: inline-block">
-                                                            {{app.entity.name}}
-                                                        </h4> 
-                                                        <small ng-if="app.entity.production" class="text-success">(Production)</small>
-                                                        <small ng-if="!app.entity.production" class="text-info">(Stage)</small>
-                                                        <div ng-if="app.entity.staging_failed_description" class="alert alert-danger">
-                                                            <b>Package {{app.entity.package_state}}, </b>
-                                                            {{app.entity.staging_failed_description}}
+                                                       ng-click="selectApp(app)"
+                                                       ng-mouseover="hoverApp(app, true)"
+                                                       ng-mouseleave="hoverApp(app, false)">
+                                                        
+                                                        <div style="display: table-cell; height: 100%; background-color: #f1f1f1" ng-if="app.hover" > <!--  -->
+                                                            <div class="btn-group-vertical">
+                                                                
+                                                                <button class="btn btn-xs btn-default" ng-click="startApp(); $event.stopPropagation();"><span class="glyphicon glyphicon-play"></span></button>
+                                                                <button class="btn btn-xs btn-default" ng-click="stopApp(); $event.stopPropagation();"><span class="glyphicon glyphicon-stop"></span></button>
+                                                                <button class="btn btn-xs btn-default" ng-click="restartApp(); $event.stopPropagation();"><span class="glyphicon glyphicon-retweet"></span></button>
+                                                                <button class="btn btn-xs btn-danger" ng-click="deleteApp(); $event.stopPropagation();"><span class="glyphicon glyphicon-trash"></span></button>
+                                                            </div>
                                                         </div>
+                                                        
+                                                        <div style="display: table-cell; position: relative; padding: 10px 15px; margin-bottom: -1px; text-align: left; vertical-align: top">
+                                                            <span class="label" ng-class="getStateClass(app.entity.state)">
+                                                                {{app.entity.state}}
+                                                            </span> &nbsp;
+                                                            <h4 class="list-group-item-heading" style="display: inline-block">
+                                                                {{app.entity.name}}
+                                                            </h4> 
 
-                                                        <ul>
-                                                            <li>
-                                                                <b>Buildpack</b>&nbsp;
-                                                                {{app.entity.buildpack}}
-                                                            </li>
-                                                        </ul>
+                                                            <small ng-if="app.entity.production" class="text-success">(Production)</small>
+                                                            <small ng-if="!app.entity.production" class="text-info">(Stage)</small>
+
+
+
+                                                            <div ng-if="app.entity.staging_failed_description" class="alert alert-danger">
+                                                                <b>Package {{app.entity.package_state}}, </b>
+                                                                {{app.entity.staging_failed_description}}
+                                                            </div>
+
+                                                            <ul>
+                                                                <li>
+                                                                    <b>Buildpack</b>&nbsp;
+                                                                    {{app.entity.buildpack}}
+                                                                </li>
+                                                            </ul>
+                                                            
+                                                        </div>
                                                     </a>
 
                                                 </div>
@@ -244,6 +265,21 @@ and open the template in the editor.
                                                     
                                                 </div>
                                                 <!-- /. Summary Content -->
+                                                
+                                                
+                                                <!-- Management content -->
+                                                <div class="panel-body" ng-if="activeSection == 'Manage' && selectedApp.env" style="position: relative; height: 100%; padding-bottom: -200px;" >
+
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-default"><span class="glyphicon glyphicon-play"></span>&nbsp;Start</button>
+                                                        <button class="btn btn-default"><span class="glyphicon glyphicon-stop"></span>&nbsp;Stop</button>
+                                                        <button class="btn btn-default"><span class="glyphicon glyphicon-retweet"></span>&nbsp;Restart</button>
+                                                        <button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span>&nbsp;Delete</button>
+                                                    </div>
+                                                    
+                                                    
+                                                </div>
+                                                <!-- /. Management Content -->
 
                                                 <!-- Application Files -->
                                                 <div class="panel-body" ng-if="activeSection == 'Files'">

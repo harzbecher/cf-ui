@@ -40,6 +40,10 @@ class Apps extends Controller
 
     function indexAction(){
         //$this->view->render('Example_view');
+        $cfApps3 = new cf\Apps(
+            $this->session->getEndPoint(), 
+            3, 
+            $this->session->getToken());
     }
 
     function listApps($spaceguid){
