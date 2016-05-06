@@ -24,32 +24,32 @@ class Apps {
     }
 
     public function listApps($args=null){
-        
+
         $http = new cf_curl($this->apiUrl);
         $http->setMethod(cf_curl::$METHOD_GET);
         $http->appendHeaders("Authorization: bearer $this->token");
         if(isset($args)){
             $http->setParameters($args);
         }
-        
+
         return $http->execute();
     }
-    
-    
-    
+
+
+
     public function getEnv($appguid){
-        
+
         if(!isset($appguid)){
             throw new Exception('Invalid guid provided');
         }
-        
+
         $http = new cf_curl($this->apiUrl."/$appguid/env");
         $http->setMethod(cf_curl::$METHOD_GET);
         $http->appendHeaders("Authorization: bearer $this->token");
-        
+
         return $http->execute();
     }
-    
+
     public function createApp($args){
 
         $http = new cf_curl($this->apiUrl);
@@ -77,7 +77,25 @@ class Apps {
         $http->setParameters($args);
         return $http->execute();
     }
-    
-    
+
+    public function stopApp($args, $appguid){
+        $http = new cf_curl($this->apiUrl . '/' . $appguid . '/stop');
+
+        $http->setMethod(cf_curl::$METHOD_PUT);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        $http->setParameters($args);
+        return $http->execute();
+    }
+
+    public function startApp($args, $appguid){
+        $http = new cf_curl($this->apiUrl . '/' . $appguid . '/start');
+
+        $http->setMethod(cf_curl::$METHOD_PUT);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        $http->setParameters($args);
+        return $http->execute();
+    }
+
+
 
 }
