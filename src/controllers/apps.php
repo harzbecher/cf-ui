@@ -167,16 +167,26 @@ class Apps extends Controller
 
 
     function deleteApp(){
-        $token = filter_input(INPUT_POST, 'token');
+        
         $appguid = filter_input(INPUT_POST, 'appguid');
-
+        
         $params = Array(
         );
+        
+        try {
+            $cfApps = new cf\Apps($this->session->getEndPoint(),
+            2,
+            $this->session->getToken());
 
-        $cfApps = new cf\Apps($this->endPoint, 2, $token);
+            $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
+            $response->setData($this->cfApps->deleteApp($params, $appguid));
+        } catch (Exception $ex) {
+            // Handle errors
+            $response->setStatus(Response::$STAT_ERROR);
+            $response->setData($ex->getMessage());
+        }
 
-        $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
-        $response->setData($this->cfApps->deleteApp($params, $appguid));
+        
         $response->display();
     }
 

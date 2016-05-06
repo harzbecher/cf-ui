@@ -162,8 +162,14 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                     return;
                 }
 
-                $scope.apps.push(res.data);
-                $scope.closeAddAppModal();
+                var app = res.data;
+                
+                // Create route 
+                $scope.createStatusMessage = "Creating route...";
+                $scope.createRoute(app, function(){
+                    $scope.apps.push(app);
+                    $scope.closeAddAppModal(); 
+                });
             });
     }
 

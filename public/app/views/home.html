@@ -121,7 +121,7 @@ and open the template in the editor.
                                                                 <button class="btn btn-xs btn-default" ng-click="startApp(app.metadata.guid); $event.stopPropagation();"><span class="glyphicon glyphicon-play"></span></button>
                                                                 <button class="btn btn-xs btn-default" ng-click="stopApp(app.metadata.guid); $event.stopPropagation();"><span class="glyphicon glyphicon-stop"></span></button>
                                                                 <button class="btn btn-xs btn-default" ng-click="restageApp(app.metadata.guid); $event.stopPropagation();"><span class="glyphicon glyphicon-retweet"></span></button>
-                                                                <button class="btn btn-xs btn-danger" ng-click="deleteApp(); $event.stopPropagation();"><span class="glyphicon glyphicon-trash"></span></button>
+                                                                <button class="btn btn-xs btn-danger" ng-click="deleteApp(app.metadata.guid); $event.stopPropagation();"><span class="glyphicon glyphicon-trash"></span></button>
                                                             </div>
                                                         </div>
 
