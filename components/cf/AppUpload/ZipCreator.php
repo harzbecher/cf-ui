@@ -64,7 +64,7 @@ class ZipCreator implements ResourcesInterface {
 				// Get real and relative path for current file
 				$filePath = $file->getRealPath();
 				$relativePath = substr($filePath, strlen($this->path) + 1);
-                                $relativePath = preg_replace("/\\\/", '/', $relativePath);
+				$relativePath = preg_replace("/\\\/", '/', $relativePath);
 				// Add current file to archive
 				$this->zip->addFile($filePath, $relativePath);
 				
