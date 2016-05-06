@@ -8,7 +8,7 @@ cfGui.directive('buildpack', ['$http', 'routeBuilder', function($http, routeBuil
            class: '='
        },
        controller: function($scope){
-            var controllerPath = routeBuilder.getController('buildpacks')+'/listBuildpacks';
+            var controllerPath = routeBuilder.getController('Buildpacks')+'/listBuildpacks';
                
             $http.get(controllerPath)
                 .then(function (result) {
