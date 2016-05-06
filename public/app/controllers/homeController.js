@@ -32,8 +32,8 @@ cfGui.controller('home', ['$scope', '$http', 'routeBuilder', 'Shared', function(
             //$scope.setActiveSpace();
         });
     };
-
-
+    
+    
     $scope.setActiveSpace = function(){
         Shared.activeSpace = $scope.activeSpace.metadata.guid;
         $scope.$broadcast("spaceChanged", {spaceGuid: Shared.activeSpace});

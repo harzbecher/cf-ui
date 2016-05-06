@@ -78,8 +78,7 @@ and open the template in the editor.
                             <div class="panel panel-default panel-main tab-pane fade in active" role="tabpanel" id="appsPanel" style="position: relative; height: 100%; padding-bottom: 55px;">
 
                                 <div class="panel-heading main-heading">
-                                    Applications
-
+                                        Applications
                                     <div class="pull-right btn-group">
                                         <button type="button" class="btn btn-xs btn-success" data-toggle="modal" data-target="#addAppModal" >
                                             <span class="glyphicon glyphicon-plus"></span>
@@ -122,7 +121,7 @@ and open the template in the editor.
                                                                 <button class="btn btn-xs btn-default" ng-click="startApp(app.metadata.guid); $event.stopPropagation();"><span class="glyphicon glyphicon-play"></span></button>
                                                                 <button class="btn btn-xs btn-default" ng-click="stopApp(app.metadata.guid); $event.stopPropagation();"><span class="glyphicon glyphicon-stop"></span></button>
                                                                 <button class="btn btn-xs btn-default" ng-click="restageApp(app.metadata.guid); $event.stopPropagation();"><span class="glyphicon glyphicon-retweet"></span></button>
-                                                                <button class="btn btn-xs btn-danger" ng-click="deleteApp(); $event.stopPropagation();"><span class="glyphicon glyphicon-trash"></span></button>
+                                                                <button class="btn btn-xs btn-danger" ng-click="deleteApp(app.metadata.guid); $event.stopPropagation();"><span class="glyphicon glyphicon-trash"></span></button>
                                                             </div>
                                                         </div>
 
@@ -148,6 +147,7 @@ and open the template in the editor.
                                                                 <li>
                                                                     <b>Buildpack</b>&nbsp;
                                                                     {{app.entity.buildpack}}
+                                                                    {{app.entity.package_state}}
                                                                 </li>
                                                             </ul>
 
@@ -351,6 +351,8 @@ and open the template in the editor.
                                                 </div>
 
                                                 <div class="modal-body">
+                                                    <div class="alert alert-info" role="alert" ng-if="createStatusMessage">{{createStatusMessage}}</div>
+                                                    <div class="alert alert-danger" role="alert" ng-if="errorMessage">{{errorMessage}}</div>
 
                                                     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" >
 
@@ -394,8 +396,7 @@ and open the template in the editor.
                                             </div><!-- /.modal-content -->
                                         </div><!-- /.modal-dialog -->
                                     </div><!-- /.modal -->
-
-
+                                    
                                 </div>
                             </div>
 
@@ -416,6 +417,8 @@ and open the template in the editor.
                         </div>
 
                     </div>
+                    
+                    
 
 
 

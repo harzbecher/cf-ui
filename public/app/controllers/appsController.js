@@ -2,6 +2,8 @@
 cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function($scope, $http, routeBuilder, Shared){
 
     $scope.errorMessage = "";
+    $scope.createStatusMessage = "";
+    
     $scope.loading = false;
 
     $scope.loadingApps = false;
@@ -9,7 +11,9 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
 
     $scope.loadingSettings = false;
     $scope.lockSettings = false;
-
+    
+    
+    
     $scope.selectedApp = null;
 
     $scope.template = 'apps.html';
@@ -54,7 +58,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                 "name": "instances",
                 "type": "number",
                 "required": true,
-                "value": null,
+                "value": 1,
                 "visible": true,
                 "placeholder": "Number of instances"
             },
@@ -71,7 +75,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                 "type": "state",
                 "required": false,
                 "value": null,
-                "visible": true,
+                "visible": false,
                 "placeholder": "Initial state"
             },
             "command": {
@@ -103,7 +107,15 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                 "type": "text",
                 "required": false,
                 "value": null,
-                "visible": true,
+                "visible": false,
+                "placeholder": "Application port"
+            },
+            "package_state": {
+                "name": "package_state",
+                "type": "text",
+                "required": false,
+                "value": "PENDING",
+                "visible": false,
                 "placeholder": "Application port"
             }
         }
@@ -115,6 +127,9 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
      * @returns {undefined}
      */
     $scope.create = function(){
+        
+        $scope.createStatusMessage = "Creating app...";
+        
         // Set active space
         $scope.applicationModel.attributes.space_guid.value = Shared.activeSpace;
         // Set default instance value
@@ -147,8 +162,14 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                     return;
                 }
 
-                $scope.apps.push(res.data);
-                $scope.closeAddAppModal();
+                var app = res.data;
+                
+                // Create route 
+                $scope.createStatusMessage = "Creating route...";
+                $scope.createRoute(app, function(){
+                    $scope.apps.push(app);
+                    $scope.closeAddAppModal(); 
+                });
             });
     }
 
@@ -244,6 +265,68 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
         return;
     };
 
+    $scope.createRoute = function(app, callBack){
+        
+        var controllerPath = routeBuilder.getController('Routes')+'/create';
+        
+        var route = {
+            "domain_guid": Shared.activeDomain,
+            "space_guid": Shared.activeSpace,
+            "host": app.entity.name
+        }
+        
+         $http.post(controllerPath, JSON.stringify(route))
+            .success(function (res) {
+                
+                // Verify and throw errors
+                if(res.status === 'error'){
+                    $scope.throwError(res.data);
+                    return;
+                }
+
+                if(res.data.error_code !== undefined){
+                    $scope.throwError(res.data.description);
+                    return;
+                }
+                
+                var routeResponse = res.data;
+                
+                $scope.createStatusMessage = "Associating route with application...";
+                $scope.associateRoute(app.metadata.guid, routeResponse.metadata.guid, callBack);
+            });
+            
+        
+    };
+    
+    $scope.associateRoute = function(appGuid, routeGuid, callBack){
+        
+        var controllerPath = routeBuilder.getController('Apps')+'/addRoute';
+        
+        var parameters = "app_guid="+appGuid+
+                "&route_guid="+routeGuid;
+        
+        $http({
+            method: 'GET',
+            url: controllerPath+"?"+parameters,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function(res){
+            // Verify and throw errors
+            if(res.status === 'error'){
+                $scope.throwError(res.data);
+                return;
+            }
+            
+            if(res.data.error_code !== undefined){
+                $scope.throwError(res.data.description);
+                return;
+            }
+            
+            $scope.createStatusMessage = "";
+            
+            callBack();
+        });
+    }
+    
 
     $scope.restageApp = function(appguid){
 
@@ -469,6 +552,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
 
     $scope.throwError = function($message){
         $scope.errorMessage = $message;
+        $scope.createStatusMessage = "";
         console.log($message);
     }
 

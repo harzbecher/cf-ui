@@ -167,16 +167,26 @@ class Apps extends Controller
 
 
     function deleteApp(){
-        $token = filter_input(INPUT_POST, 'token');
+        
         $appguid = filter_input(INPUT_POST, 'appguid');
-
+        
         $params = Array(
         );
+        
+        try {
+            $cfApps = new cf\Apps($this->session->getEndPoint(),
+            2,
+            $this->session->getToken());
 
-        $cfApps = new cf\Apps($this->endPoint, 2, $token);
+            $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
+            $response->setData($this->cfApps->deleteApp($params, $appguid));
+        } catch (Exception $ex) {
+            // Handle errors
+            $response->setStatus(Response::$STAT_ERROR);
+            $response->setData($ex->getMessage());
+        }
 
-        $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
-        $response->setData($this->cfApps->deleteApp($params, $appguid));
+        
         $response->display();
     }
 
@@ -203,6 +213,30 @@ class Apps extends Controller
 
         $response = new \Mapache\Response(\Mapache\Response::$RES_QUERY);
         $response->setData($this->cfApps->restageApp($params, $appguid));
+        $response->display();
+    }
+    
+    function addRoute(){
+        
+         // Read json post
+        $appguid = filter_input(INPUT_GET, 'app_guid');
+        $routeguid = filter_input(INPUT_GET, 'route_guid');
+        
+        // Prepare Response
+        $response = new Response(Response::$RES_QUERY);
+        
+        try{
+            // Retrieve data
+            $status = $this->cfApps->addRoute($routeguid, $appguid);
+            $response->setStatus(Response::$STAT_OK);
+            $response->setData($status);
+        } catch (Exception $ex) {
+            // Handle errors
+            $response->setStatus(Response::$STAT_ERROR);
+            $response->setData($ex->getMessage());
+        }
+
+        // Display Respone
         $response->display();
     }
 

@@ -78,6 +78,17 @@ class Apps {
         $http->setParameters($args);
         return $http->execute();
     }
+    
+    public function addRoute($routeguid, $appguid){
+
+        $url = $this->apiUrl."/$appguid/routes/$routeguid";
+        $http = new cf_curl($url);
+        $http->setMethod(cf_curl::$METHOD_PUT);
+        $http->appendHeaders("Authorization: bearer $this->token");
+        return $http->execute();
+    }
+    
+    
 
     public function restageApp($args, $appguid){
         $http = new cf_curl($this->apiUrl . '/' . $appguid . '/restage');
