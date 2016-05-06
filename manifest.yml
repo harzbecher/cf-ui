@@ -1,0 +1,6 @@
+---
+path: .
+name: cf-ui
+memory: 256M
+instances: 1
+buildpack: php_buildpack

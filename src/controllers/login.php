@@ -53,6 +53,8 @@ class login extends Mapache\Controller{
             if($this->session->login($username, $password, $endpoint)){
                 $response->setStatus(\Mapache\Response::$STAT_OK);
                 $response->setData("started");
+            } else {
+                throw new Exception($this->session->getErrorMessage());
             }
             
         } catch (Exception $ex) {

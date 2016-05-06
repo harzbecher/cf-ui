@@ -20,7 +20,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
     $scope.appSections = [
         'Summary',
         'Files',
-        'Config',
+        'Manage',
         'Services',
         'Push'
     ];
@@ -290,6 +290,14 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
         });
         
         return true;
+    }
+    
+    $scope.hoverApp = function(app, hover){
+        if(hover){
+            app.hover = true;
+        } else {
+            app.hover = false;
+        }
     }
     
     

@@ -13,6 +13,7 @@ cfGui.controller('login', ['$scope', '$http', 'routeBuilder', function($scope, $
     $scope.login = function(){
         
         $scope.loading = true;
+        $scope.errorMessage = "";
         
         var controllerPath = routeBuilder.getController('login')+'/login';
         
@@ -36,6 +37,13 @@ cfGui.controller('login', ['$scope', '$http', 'routeBuilder', function($scope, $
         
         
         return;
+    }
+    
+    $scope.checkEnter = function($event){
+        var keyCode = $event.which || $event.keyCode;
+        if (keyCode === 13 && $scope.username !== null && $scope.password !== null) {
+            $scope.login();
+        }
     }
     
     $scope.throwError = function($message){

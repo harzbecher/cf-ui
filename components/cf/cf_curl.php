@@ -8,6 +8,8 @@ use Mapache\Exception;
 /**
  * Cloud foundry http Service
  * @author: Víctor Hugo garcía Harzbecher <victorhugo.garcia@ge.com >
+ * @author: Fernando Espinosa <fernando.espinosa@ge.com>
+ * @author: Carlos Frias <carlos.frias@ge.com>
  * @version: 1.0
  * @since: April 2016
  */
