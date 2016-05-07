@@ -4,6 +4,8 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
     $scope.errorMessage = "";
     $scope.createStatusMessage = "";
     
+    $scope.uploadingFiles = false;
+    
     $scope.loading = false;
 
     $scope.loadingApps = false;
@@ -24,9 +26,9 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
     $scope.appSections = [
         'Summary',
         'Files',
-        'Manage',
-        'Services',
-        'Push'
+        'Push',
+        '* Manage',
+        '* Services'
     ];
 
     $scope.defaultSection = 'Summary';
@@ -205,6 +207,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
     }
 
     $scope.getTargetForUpload = function(){
+        $scope.uploadingFiles = true;
         return routeBuilder.getController('UploadApps') + '/UploadAction/' + $scope.selectedApp.metadata.guid + '/';
     }
 
@@ -237,14 +240,17 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
                     return;
                 }
 								
-				//Perform restart and restage of the app to apply the new files being pushed.
-				$scope.stopApp($scope.selectedApp.metadata.guid);
-				$scope.startApp($scope.selectedApp.metadata.guid);
-				$scope.restageApp($scope.selectedApp.metadata.guid);
+                //Perform restart and restage of the app to apply the new files being pushed.
+                $scope.stopApp($scope.selectedApp.metadata.guid, function(){
+                    $scope.startApp($scope.selectedApp.metadata.guid, function(){
+                        //$scope.restageApp($scope.selectedApp.metadata.guid);
+                    });
+                });
 				
-				$scope.lockSettings = false;
-				$scope.loadingSettingsMessage = loadingMessage;
-				$scope.loadingSettings = false;
+                $scope.lockSettings = false;
+                $scope.loadingSettingsMessage = loadingMessage;
+                $scope.loadingSettings = false;
+                $scope.uploadingFiles = false;
             });
     }
 
@@ -346,7 +352,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
     }
     
 
-    $scope.restageApp = function(appguid){
+    $scope.restageApp = function(appguid, callback){
 
         $scope.loadingApps = true;
 
@@ -364,13 +370,17 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
             // Stop loader
             $scope.loadingApps = false;
             $scope.lockApps = false;
+            
+            if(typeof callback !== 'undefined'){
+                callback.apply($scope);
+            }
 
             $scope.getAppsList();
         });
         return;
     };
 
-    $scope.startApp = function(appguid){
+    $scope.startApp = function(appguid, callback){
 
         $scope.loadingApps = true;
 
@@ -389,12 +399,16 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
             $scope.loadingApps = false;
             $scope.lockApps = false;
 
+            if(typeof callback !== 'undefined'){
+                callback.apply($scope);
+            }
+            
             $scope.getAppsList();
         });
         return;
     };
 
-    $scope.stopApp = function(appguid){
+    $scope.stopApp = function(appguid, callback){
 
         $scope.loadingApps = true;
 
@@ -412,6 +426,10 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
             // Stop loader
             $scope.loadingApps = false;
             $scope.lockApps = false;
+            
+            if(typeof callback !== 'undefined'){
+                callback.apply($scope);
+            }
 
             $scope.getAppsList();
         });
@@ -531,7 +549,7 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
         var controllerPath = routeBuilder.getController('apps')+'/listFiles';
         var parameters = "guid="+guid+
                 "&instance_index="+0+
-                "&path=";
+                "&path=app/htdocs";
 
         $http({
             method: 'GET',
@@ -550,10 +568,44 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
             }
 
             application.files = res.data;
+            console.log(application.files);
         });
 
 
     }
+    
+    
+        $scope.getDirFiles = function (fileObj){
+        //var guid = application.metadata.guid;
+        
+        //console.log(fileObj.name);
+        var guid = $scope.selectedApp.metadata.guid;
+        
+        var controllerPath = routeBuilder.getController('apps')+'/listFiles';
+        var parameters = "guid="+guid+
+                "&instance_index="+0+
+                "&path="+fileObj.path+"/"+fileObj.name;
+        
+        $http({
+            method: 'GET',
+            url: controllerPath+"?"+parameters,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function(res){
+            // Verify and throw errors
+            if(res.status === 'error'){
+                $scope.throwError(res.data);
+            }
+            
+            //$scope.filesList = res.data;
+            fileObj.files = res.data;
+            console.log(res.data);
+            console.log(parameters);
+            
+        });
+        
+        //console.log("Here "+parameters);
+    };
+    
 
     // UI Events
     $scope.selectApp = function (appObject){

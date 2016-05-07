@@ -1,4 +1,6 @@
 <?php
+ini_set('max_execution_time', 3600);
+
 if(!defined('APPLICATION_ENV')) {
 	define('APPLICATION_ENV',
 		(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
@@ -32,8 +34,7 @@ $config = Array(
             'Session' => 'components/Session.php'
         ),
         'views_path' => APPLICATION_PATH . '/public/app/views/'
-    ),
-    'proxy' => 'PITC-Zscaler-Americas-Cincinnati3PR.proxy.corporate.ge.com:80'
+    )
 
 );
 

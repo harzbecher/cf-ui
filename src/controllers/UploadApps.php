@@ -56,7 +56,7 @@ class UploadApps extends Controller
             
             $zipInfo = new \cf\AppUpload\ZipCreator(array("path" => $_SESSION['cfUpload']['tempUploadDir']));
             $args = array(
-                "async" => "false",
+                "async" => "true",
                 "resources" => json_encode($zipInfo->getResources(), JSON_UNESCAPED_SLASHES),
                 "application" => new CURLFile($zipInfo->getZipPath(), 'application/zip', 'application.zip')
             );

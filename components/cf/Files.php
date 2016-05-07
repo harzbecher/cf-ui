@@ -49,9 +49,15 @@ class Files {
             $file = preg_replace('/\s+|\t+/', '$', $file);
             // Split
             $elements = explode('$', $file);
+            
+            $size = (isset($elements[1])) ? $elements[1] : null;
+            
             $files[$index] = Array(
                 'name' => $elements[0],
-                'size' => (isset($elements[1])) ? $elements[1] : null
+                'size' => $size,
+                'path' => $path,
+                'files'=> 'NULL',
+                'subdir'=> 'NULL'
             );
         }
         

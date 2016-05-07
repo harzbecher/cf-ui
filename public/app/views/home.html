@@ -28,6 +28,23 @@ and open the template in the editor.
 
     <body ng-app="cf-gui" style="height: 90%; background-color: #3b3b3f; ">
 
+        <script type="text/ng-template" id="fileTree">
+
+            <li ng-repeat="file in file.files" ng-if="file.size!=='null'" class="panel panel-default">
+                <div >
+                    <a data-toggle="collapse">
+                        <small ng-if="file.size=='-'" class="text-info glyphicon glyphicon-plus" ng-click="getDirFiles(file)"></small>
+                    </a>
+                    <small ng-if="file.size!='-'" class="glyphicon glyphicon-file"></small>
+                    {{file.name}}
+                    <span class="badge" style="float:right;">{{file.size}}</span>                                                
+                </div>
+                <ul id= ng-if="file.size=='-'" ng-include="'fileTree'">
+                </ul>
+            </li>
+                                                    
+        </script>
+        
         <div class="container" style="height: 100%" ng-controller="home">
             <div class="row" style="background-color: #FFFFFF; height: 100%; position: relative" >
                 <div class="col-md-12" style="height: 100%">
@@ -283,15 +300,24 @@ and open the template in the editor.
 
                                                 <!-- Application Files -->
                                                 <div class="panel-body" ng-if="activeSection == 'Files'">
-                                                    <ul class="list-group">
-                                                        <li ng-repeat="file in selectedApp.files" class="list-group-item">
-                                                            <small ng-if="file.size == '-'" class="text-info glyphicon glyphicon-plus"></small>
-                                                            <small ng-if="file.size != '-'" class="glyphicon glyphicon-file"></small>
-
-                                                            <span class="badge">{{file.size}}</span>
-                                                            {{file.name}}
-                                                        </li>
-                                                    </ul>
+                                                    
+                                                    <div class="panel-group" ng-if="activeSection == 'Files'" >
+                                                        <div ng-repeat="file in selectedApp.files track by $index" ng-if="file.size!='null'" class="panel panel-default">
+                                                            <div class="panel-heading" >
+                                                                <a data-toggle="collapse" >
+                                                                    <small ng-if="file.size == '-'" class="text-info glyphicon glyphicon-plus" ng-click="getDirFiles(file)"></small>
+                                                                </a>
+                                                                    <small ng-if="file.size != '-'" class="glyphicon glyphicon-file"></small>
+                                                                
+                                                                {{file.name}}
+                                                                <span class="badge" style="float:right;">{{file.size}}</span>
+                                                                
+                                                            </div>
+                                                            <div ng-if="file.size =='-'" ng-include="'fileTree'">
+                                                            
+                                                        </div>
+                                                        </div>
+                                                    </div>   
                                                 </div>
 
                                                 <!-- Push application files -->
@@ -312,7 +338,7 @@ and open the template in the editor.
                                                                     </div>
                                                                     <span class="btn" flow-btn flow-directory><i class="icon icon-folder-open"></i> Upload Folder</span>
                                                                     <div class="form-group" >
-                                                                        <a class="btn btn-sm btn-success" ng-click="$flow.resume()" ng-show="!$flow.isUploading()">Resume</a>
+                                                                        <a class="btn btn-sm btn-success" ng-click="$flow.resume()" ng-show="uploadingFiles">Resume</a>
                                                                         <a class="btn btn-sm btn-warning" ng-click="$flow.pause()" ng-show="$flow.isUploading()">Pause</a>
                                                                         <a class="btn  btn-sm btn-danger" ng-click="$flow.cancel()" ng-show="$flow.isUploading()">Cancel</a>
                                                                     </div>
