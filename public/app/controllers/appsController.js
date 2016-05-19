@@ -242,9 +242,11 @@ cfGui.controller('apps', ['$scope', '$http', 'routeBuilder', 'Shared', function(
 								
                 //Perform restart and restage of the app to apply the new files being pushed.
                 $scope.stopApp($scope.selectedApp.metadata.guid, function(){
-                    $scope.startApp($scope.selectedApp.metadata.guid, function(){
+					window.setTimeout(function(){
+						$scope.startApp($scope.selectedApp.metadata.guid, function(){
                         //$scope.restageApp($scope.selectedApp.metadata.guid);
-                    });
+                    });}, 5000);
+                    
                 });
 				
                 $scope.lockSettings = false;

@@ -33,7 +33,10 @@ class UploadApps extends Controller
         $config = new \Flow\Config();
         $config->setTempDir($_SESSION['cfUpload']['tempChunkUploadDir']);
         $request = new \Flow\Request();
-        $filename = preg_replace('/\.\.(\\|\/)/', "", $request->getRelativePath());
+        
+        $fullPath = $request->getRelativePath();
+        $shortPath = substr($fullPath, strpos($fullPath, "/"));
+        $filename = preg_replace('/\.\.(\\|\/)/', "", $shortPath);
         $this->createRelativeTree($_SESSION['cfUpload']['tempUploadDir'], $filename);
         if (\Flow\Basic::save($_SESSION['cfUpload']['tempUploadDir'] . "/{$filename}", $config, $request)) {
             // file saved successfully and can be accessed at './final_file_destination'
@@ -57,10 +60,10 @@ class UploadApps extends Controller
             $zipInfo = new \cf\AppUpload\ZipCreator(array("path" => $_SESSION['cfUpload']['tempUploadDir']));
             $args = array(
                 "async" => "true",
-                "resources" => json_encode($zipInfo->getResources(), JSON_UNESCAPED_SLASHES),
+                "resources" => json_encode(array()), //json_encode($zipInfo->getResources(), JSON_UNESCAPED_SLASHES),
                 "application" => new CURLFile($zipInfo->getZipPath(), 'application/zip', 'application.zip')
             );
-            
+			
             $http->setParameters($args, 'raw');
             $http->setParseMode(\cf\cf_curl::$PMODE_RAW);
             $cfResponse = $http->execute();            
